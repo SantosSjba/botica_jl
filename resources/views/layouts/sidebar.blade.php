@@ -5,65 +5,34 @@
 
     // Get current path
     $currentPath = request()->path();
-@endphp
 
+    // Compute which submenus should be open on load (same logic as before, in PHP)
+    $initialOpenKeys = [];
+    foreach ($menuGroups as $groupIndex => $menuGroup) {
+        foreach ($menuGroup['items'] as $itemIndex => $item) {
+            if (!isset($item['subItems'])) {
+                continue;
+            }
+            foreach ($item['subItems'] as $subItem) {
+                $subPath = $subItem['path'] ?? '';
+                if (preg_match('#^https?://#', $subPath)) {
+                    $subPath = parse_url($subPath, PHP_URL_PATH) ?? $subPath;
+                }
+                $subPath = ltrim($subPath, '/');
+                if ($currentPath === $subPath || str_starts_with($currentPath, $subPath . '/')) {
+                    $initialOpenKeys[$groupIndex . '-' . $itemIndex] = true;
+                }
+            }
+        }
+    }
+    $initialOpenKeys = array_keys($initialOpenKeys);
+@endphp
+<script>
+    window.__sidebarMenuConfig = @json(['currentPath' => $currentPath, 'initialOpen' => $initialOpenKeys]);
+</script>
 <aside id="sidebar"
     class="fixed flex flex-col mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-99999 border-r border-gray-200"
-    x-data="{
-        openSubmenus: {},
-        init() {
-            // Auto-open Dashboard menu on page load
-            this.initializeActiveMenus();
-        },
-        initializeActiveMenus() {
-            const currentPath = '{{ $currentPath }}';
-
-            @foreach ($menuGroups as $groupIndex => $menuGroup)
-                @foreach ($menuGroup['items'] as $itemIndex => $item)
-                    @if (isset($item['subItems']))
-                        // Check if any submenu item matches current path (exact or prefix for sub-routes)
-                        @foreach ($item['subItems'] as $subItem)
-                            @php
-                                $subPath = $subItem['path'] ?? '';
-                                if (preg_match('#^https?://#', $subPath)) {
-                                    $subPath = parse_url($subPath, PHP_URL_PATH) ?? $subPath;
-                                }
-                                $subPath = ltrim($subPath, '/');
-                            @endphp
-                            if (currentPath === '{{ $subPath }}' || (currentPath.startsWith('{{ $subPath }}' + '/')) {
-                                this.openSubmenus['{{ $groupIndex }}-{{ $itemIndex }}'] = true;
-                            }
-                            @endforeach
-                    @endif
-                @endforeach
-            @endforeach
-        },
-        toggleSubmenu(groupIndex, itemIndex) {
-            const key = groupIndex + '-' + itemIndex;
-            const newState = !this.openSubmenus[key];
-
-            // Close all other submenus when opening a new one
-            if (newState) {
-                this.openSubmenus = {};
-            }
-
-            this.openSubmenus[key] = newState;
-        },
-        isSubmenuOpen(groupIndex, itemIndex) {
-            const key = groupIndex + '-' + itemIndex;
-            return this.openSubmenus[key] || false;
-        },
-        isActive(path) {
-            let pathNorm = path;
-            if (path && (path.indexOf('http') === 0 || path.indexOf('//') === 0)) {
-                try { pathNorm = new URL(path, window.location.origin).pathname.replace(/^\//, ''); } catch(e) { pathNorm = path.replace(/^\//, ''); }
-            } else {
-                pathNorm = (path || '').replace(/^\//, '');
-            }
-            const current = '{{ $currentPath }}';
-            return current === pathNorm || (pathNorm && current.startsWith(pathNorm + '/'));
-        }
-    }"
+    x-data="sidebarMenu()"
     :class="{
         'w-[290px]': $store.sidebar.isExpanded || $store.sidebar.isMobileOpen || $store.sidebar.isHovered,
         'w-[90px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,

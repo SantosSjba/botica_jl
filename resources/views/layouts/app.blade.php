@@ -72,21 +72,54 @@
                     }
                 }
             });
+
+            Alpine.data('sidebarMenu', () => {
+                const config = window.__sidebarMenuConfig || { currentPath: '', initialOpen: [] };
+                const initialOpen = config.initialOpen || [];
+                return {
+                    openSubmenus: Object.fromEntries(initialOpen.map(k => [k, true])),
+                    currentPath: config.currentPath || '',
+                    toggleSubmenu(groupIndex, itemIndex) {
+                        const key = groupIndex + '-' + itemIndex;
+                        const newState = !this.openSubmenus[key];
+                        if (newState) {
+                            this.openSubmenus = {};
+                        }
+                        this.openSubmenus[key] = newState;
+                    },
+                    isSubmenuOpen(groupIndex, itemIndex) {
+                        const key = groupIndex + '-' + itemIndex;
+                        return this.openSubmenus[key] || false;
+                    },
+                    isActive(path) {
+                        let pathNorm = path;
+                        if (path && (path.indexOf('http') === 0 || path.indexOf('//') === 0)) {
+                            try { pathNorm = new URL(path, window.location.origin).pathname.replace(/^\//, ''); } catch(e) { pathNorm = path.replace(/^\//, ''); }
+                        } else {
+                            pathNorm = (path || '').replace(/^\//, '');
+                        }
+                        const current = this.currentPath;
+                        return current === pathNorm || (pathNorm && current.startsWith(pathNorm + '/'));
+                    }
+                };
+            });
         });
     </script>
 
-    <!-- Apply dark mode immediately to prevent flash -->
+    <!-- Apply dark mode immediately to prevent flash (runs in head: only touch documentElement; body is set when Alpine inits) -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme');
             const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             const theme = savedTheme || systemTheme;
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.body.classList.add('dark', 'bg-gray-900');
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.body.classList.remove('dark', 'bg-gray-900');
+            if (document.documentElement) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    if (document.body) document.body.classList.add('dark', 'bg-gray-900');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    if (document.body) document.body.classList.remove('dark', 'bg-gray-900');
+                }
             }
         })();
     </script>
