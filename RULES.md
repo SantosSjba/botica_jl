@@ -92,7 +92,19 @@ Reutilizar la **lógica de negocio** del código original; reimplementar en Lara
 
 ---
 
-## 7. Convenciones de código
+## 7. Loader en cada acción
+
+- **Toda acción del usuario** que genere una petición al servidor (enviar formulario, guardar, eliminar, filtrar, etc.) debe mostrar un **loader** (indicador de carga) mientras la petición está en curso.
+- Objetivos: evitar doble envío, dar feedback inmediato y dejar claro que el sistema está procesando.
+- Implementación recomendada:
+  - **Formularios (submit):** al enviar, deshabilitar el botón y mostrar spinner en el botón o overlay sobre el formulario hasta que la página responda o redirija.
+  - **Enlaces/acciones:** overlay global o loader en el área afectada (por ejemplo, tabla) hasta que llegue la respuesta.
+  - Reutilizar el mismo estilo de loader en todo el proyecto (spinner + opcional overlay semitransparente), por ejemplo el del preloader existente o un componente Blade/Alpine compartido.
+- En nuevas pantallas o módulos, incluir siempre el estado de carga asociado a la acción.
+
+---
+
+## 8. Convenciones de código
 
 - **PHP:** PSR-12. Type hints en métodos y propiedades donde sea posible.
 - **Nombres:** Inglés para código (clases, métodos, variables); español para textos al usuario y comentarios de negocio si se desea.
@@ -101,7 +113,7 @@ Reutilizar la **lógica de negocio** del código original; reimplementar en Lara
 
 ---
 
-## 8. Resumen de pasos recomendados
+## 9. Resumen de pasos recomendados
 
 1. Configurar `.env` con la BD existente (o copia) y probar conexión.
 2. Instalar y ejecutar `migrate:generate`; revisar y guardar migraciones en control de versiones.
@@ -112,7 +124,7 @@ Reutilizar la **lógica de negocio** del código original; reimplementar en Lara
 
 ---
 
-## 9. Referencias rápidas
+## 10. Referencias rápidas
 
 - **Generar migraciones desde BD existente:** [kitloong/laravel-migrations-generator](https://github.com/kitloong/laravel-migrations-generator) — `composer require --dev kitloong/laravel-migrations-generator` y `php artisan migrate:generate`.
 - **Mejoras ya identificadas en el sistema original:** Ver `SISTEMA FARMACIA/MEJORAS_SISTEMA.md` (SQL injection, XSS, transacciones, contraseñas, CSRF).
