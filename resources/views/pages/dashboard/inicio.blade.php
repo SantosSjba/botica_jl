@@ -52,9 +52,15 @@
         </a>
     </div>
 
-    <div id="dashboard-datos-wrapper" class="space-y-6">
+    <x-ui.content-loading
+        wrapperId="dashboard-datos-wrapper"
+        loadingId="dashboard-datos-loading"
+        contentContainerId="dashboard-datos-container"
+        loadingText="Cargando..."
+        contentContainerClass="space-y-6"
+    >
         @include('pages.dashboard._datos-dashboard')
-    </div>
+    </x-ui.content-loading>
 </div>
 
 @push('scripts')
@@ -62,24 +68,29 @@
 (function() {
     var baseUrl = @json(route('dashboard'));
     var wrapper = document.getElementById('dashboard-datos-wrapper');
+    var container = document.getElementById('dashboard-datos-container');
+    var loadingEl = document.getElementById('dashboard-datos-loading');
     var form = document.getElementById('form-filtro-dashboard');
 
+    function setLoading(show) {
+        if (!loadingEl) return;
+        if (show) { loadingEl.classList.remove('hidden'); loadingEl.classList.add('flex'); }
+        else { loadingEl.classList.add('hidden'); loadingEl.classList.remove('flex'); }
+    }
+
     function updateDatos(url, pushState) {
-        if (!wrapper) return;
-        wrapper.classList.add('opacity-60', 'pointer-events-none');
+        if (!container) return;
+        setLoading(true);
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } })
             .then(function(r) { return r.text(); })
             .then(function(html) {
-                wrapper.innerHTML = html;
-                wrapper.classList.remove('opacity-60', 'pointer-events-none');
+                container.innerHTML = html;
                 if (pushState !== false) window.history.pushState({}, '', url);
                 form = document.getElementById('form-filtro-dashboard');
                 if (form) form.addEventListener('submit', onFormSubmit);
             })
-            .catch(function() {
-                wrapper.classList.remove('opacity-60', 'pointer-events-none');
-                window.location = url;
-            });
+            .catch(function() { window.location = url; })
+            .finally(function() { setLoading(false); });
     }
 
     function onFormSubmit(e) {

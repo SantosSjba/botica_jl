@@ -27,9 +27,13 @@
             </div>
         </div>
 
-        <div id="consulta-tabla-wrapper">
+        <x-ui.content-loading
+            wrapperId="consulta-tabla-wrapper"
+            loadingId="consulta-tabla-loading"
+            contentContainerId="consulta-tabla-container"
+        >
             @include('pages.consulta._tabla-productos')
-        </div>
+        </x-ui.content-loading>
     </div>
 </div>
 
@@ -38,11 +42,19 @@
 (function() {
     var baseUrl = @json(route('consulta.productos'));
     var wrapper = document.getElementById('consulta-tabla-wrapper');
+    var container = document.getElementById('consulta-tabla-container');
+    var loadingEl = document.getElementById('consulta-tabla-loading');
     var form = document.getElementById('form-buscar-productos');
     var inputBuscar = document.getElementById('input-buscar');
     var inputSort = document.getElementById('input-sort');
     var inputDirection = document.getElementById('input-direction');
     var debounceTimer = null;
+
+    function setLoading(show) {
+        if (!loadingEl) return;
+        if (show) { loadingEl.classList.remove('hidden'); loadingEl.classList.add('flex'); }
+        else { loadingEl.classList.add('hidden'); loadingEl.classList.remove('flex'); }
+    }
 
     function buildUrl(params) {
         var q = new URLSearchParams(params);
@@ -50,18 +62,18 @@
     }
 
     function updateTabla(url, pushState) {
+        setLoading(true);
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } })
             .then(function(r) { return r.text(); })
             .then(function(html) {
-                wrapper.innerHTML = html;
-                if (pushState !== false) {
-                    window.history.pushState({}, '', url);
-                }
+                if (container) container.innerHTML = html;
+                if (pushState !== false) window.history.pushState({}, '', url);
                 var u = new URL(url, window.location.origin);
                 inputSort.value = u.searchParams.get('sort') || 'codigo';
                 inputDirection.value = u.searchParams.get('direction') || 'asc';
             })
-            .catch(function() { window.location = url; });
+            .catch(function() { window.location = url; })
+            .finally(function() { setLoading(false); });
     }
 
     function aplicarBusqueda() {
