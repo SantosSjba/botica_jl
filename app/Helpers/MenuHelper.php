@@ -18,6 +18,9 @@ class MenuHelper
     {
         $enDesarrollo = route('en-desarrollo');
         $items = [];
+        $routeCajaApertura = route('caja.apertura');
+        $routeCajaCierre = route('caja.cierre');
+        $routeCajaSeguimiento = route('caja.seguimiento');
 
         // Inicio — ambos
         $items[] = [
@@ -78,13 +81,13 @@ class MenuHelper
         // Caja — ambos; subítems según estado
         $cajaSubItems = [];
         if (PermisosHelper::puedeVerCajaApertura()) {
-            $cajaSubItems[] = ['name' => 'Apertura de caja', 'path' => $enDesarrollo];
+            $cajaSubItems[] = ['name' => 'Apertura de caja', 'path' => $routeCajaApertura];
         }
         if (PermisosHelper::puedeVerCajaCierre()) {
-            $cajaSubItems[] = ['name' => 'Cierre de caja', 'path' => $enDesarrollo];
+            $cajaSubItems[] = ['name' => 'Cierre de caja', 'path' => $routeCajaCierre];
         }
         if (PermisosHelper::puedeVerCajaSeguimiento()) {
-            $cajaSubItems[] = ['name' => 'Seguimiento de caja', 'path' => $enDesarrollo];
+            $cajaSubItems[] = ['name' => 'Seguimiento de caja', 'path' => $routeCajaSeguimiento];
         }
         if (!empty($cajaSubItems)) {
             $items[] = [

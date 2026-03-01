@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Caja\CajaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Reportes\CuadreCajaController;
 use App\Http\Controllers\Mantenimiento\CategoriaController as MantenimientoCategoriaController;
 use App\Http\Controllers\Mantenimiento\LoteController as MantenimientoLoteController;
 use App\Http\Controllers\Mantenimiento\PresentacionController as MantenimientoPresentacionController;
@@ -35,6 +37,16 @@ Route::middleware('auth')->group(function () {
     Route::get('mantenimiento/productos/export/excel', [MantenimientoProductoController::class, 'exportExcel'])->name('mantenimiento.productos.export.excel');
     Route::get('mantenimiento/productos/export/pdf', [MantenimientoProductoController::class, 'exportPdf'])->name('mantenimiento.productos.export.pdf');
     Route::resource('mantenimiento/productos', MantenimientoProductoController::class)->names('mantenimiento.productos');
+
+    // Caja: apertura, cierre, seguimiento (ambos roles; visibilidad por estado en menú)
+    Route::get('/caja/apertura', [CajaController::class, 'apertura'])->name('caja.apertura');
+    Route::post('/caja/apertura', [CajaController::class, 'storeApertura'])->name('caja.store-apertura');
+    Route::get('/caja/cierre', [CajaController::class, 'cierre'])->name('caja.cierre');
+    Route::post('/caja/cierre', [CajaController::class, 'storeCierre'])->name('caja.store-cierre');
+    Route::get('/caja/seguimiento', [CajaController::class, 'seguimiento'])->name('caja.seguimiento');
+
+    // Reportes: cuadre de caja (acceso según rol)
+    Route::get('/reportes/cuadrecaja', [CuadreCajaController::class, 'show'])->name('reportes.cuadrecaja');
 
     // Mantenimiento: Forma farmacéutica (Categoría)
     Route::resource('mantenimiento/categorias', MantenimientoCategoriaController::class)->names('mantenimiento.categorias');
