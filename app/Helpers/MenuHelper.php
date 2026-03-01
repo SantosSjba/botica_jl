@@ -43,7 +43,7 @@ class MenuHelper
                 'icon' => 'task',
                 'path' => '#',
                 'subItems' => [
-                    ['name' => 'Cliente / Laboratorio', 'path' => $enDesarrollo],
+                    ['name' => 'Cliente / Laboratorio', 'path' => route('mantenimiento.clientes.index')],
                     ['name' => 'Producto', 'path' => $enDesarrollo],
                     ['name' => 'Forma farmacéutica', 'path' => $enDesarrollo],
                     ['name' => 'Presentación', 'path' => $enDesarrollo],
@@ -56,7 +56,7 @@ class MenuHelper
             $items[] = [
                 'name' => 'Clientes',
                 'icon' => 'user-profile',
-                'path' => $enDesarrollo,
+                'path' => route('mantenimiento.clientes.index'),
             ];
         }
 

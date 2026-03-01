@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
 
@@ -20,6 +21,9 @@ Route::middleware('auth')->group(function () {
 
     // Consultas
     Route::get('/consulta/productos', [ConsultaProductosController::class, 'index'])->name('consulta.productos');
+
+    // Mantenimiento: Cliente / Laboratorio (accesible por ADMIN y USUARIO)
+    Route::resource('mantenimiento/clientes', ClienteController::class)->names('mantenimiento.clientes');
 
     // Páginas en desarrollo (mensaje único)
     Route::get('/en-desarrollo', function () {
