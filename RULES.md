@@ -80,6 +80,21 @@ Reutilizar la **lógica de negocio** del código original; reimplementar en Lara
 - **XSS:** Escapar salida en Blade con `{{ }}`; usar `{!! !!}` solo cuando el contenido sea seguro y controlado.
 - **Configuración y secretos:** SUNAT, BD, claves SOL, etc., desde `.env` y `config/`, nunca hardcodeados.
 
+### 5.1 Roles, permisos y menú (sistema antiguo — centralizado)
+
+El sistema original usa **dos roles** en la tabla `usuario` (campo `tipo`): `ADMINISTRADOR` y `USUARIO`. La visibilidad del menú y el acceso a rutas deben respetar estas reglas; la referencia es el sistema antiguo (`central/centralproducto.php`, `seguridad.php`).
+
+- **Config central:** `config/permisos_farmacia.php` — constantes de roles y lista de rutas solo administrador.
+- **Helper de permisos:** `App\Helpers\PermisosHelper` — `tipo()`, `isAdministrador()`, `estadoCaja()`, `tieneCajaAbierta()`, `puedeVerMenuVentas()`, `puedeVerCajaApertura()`, `puedeVerCajaCierre()`, `puedeVerCajaSeguimiento()`.
+- **Estado de caja:** Igual que el antiguo: si el usuario tiene una caja con `estado = 'Abierto'` (cualquier día), se considera "Abierto"; si no, se usa la última caja del día actual (tabla `caja_apertura`).
+- **Menú (MenuHelper):**
+  - **Inicio, Consultas:** ambos roles.
+  - **Mantenimiento** (submenú completo): solo ADMINISTRADOR. **USUARIO** ve solo el ítem **Clientes** (un enlace).
+  - **Ventas** (submenú): solo si el usuario tiene **caja abierta**.
+  - **Caja** (submenú): ambos; **Apertura** solo si no hay caja abierta; **Cierre** solo si hay caja abierta; **Seguimiento**: ADMINISTRADOR siempre, USUARIO solo si tiene caja abierta o cerrada (hoy).
+  - **Compras, Reportes, Backup, Configuración, Acerca de:** solo ADMINISTRADOR.
+- **Rutas solo administrador:** Aplicar el middleware `rol.administrador` a las rutas de mantenimiento, compras, reportes, backup, configuración y acerca cuando existan (ver `config/permisos_farmacia.php` → `rutas_solo_administrador`). El menú ya oculta estas opciones a USUARIO; el middleware protege el acceso directo por URL.
+
 ---
 
 ## 6. Estructura Laravel y TailAdmin
