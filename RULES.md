@@ -92,17 +92,12 @@ Reutilizar la **lógica de negocio** del código original; reimplementar en Lara
 
 ---
 
-## 7. Loader en cada acción
+## 7. Loader en acciones
 
-- **Toda acción del usuario** que genere una petición al servidor (enviar formulario, guardar, eliminar, filtrar, etc.) debe mostrar un **loader** (indicador de carga) mientras la petición está en curso.
-- Objetivos: evitar doble envío, dar feedback inmediato y dejar claro que el sistema está procesando.
-- Implementación recomendada:
-  - **Formularios (submit):** al enviar, deshabilitar el botón y mostrar spinner en el botón o overlay sobre el formulario hasta que la página responda o redirija.
-  - **Enlaces/acciones:** overlay global o loader en el área afectada (por ejemplo, tabla) hasta que llegue la respuesta.
-  - Reutilizar el mismo estilo de loader en todo el proyecto (spinner + opcional overlay semitransparente), por ejemplo el del preloader existente o un componente Blade/Alpine compartido.
-- En nuevas pantallas o módulos, incluir siempre el estado de carga asociado a la acción.
-
----
+- **Toda acción** que provoque una petición al servidor (enviar formulario, guardar, eliminar, etc.) debe mostrar un **estado de carga** (loader) para indicar que la acción está en curso.
+- **Implementación:** Usar el componente reutilizable `<x-ui.button-loader>` en botones de envío/acción. El loader va **dentro del botón** (spinner + texto "Cargando...").
+- **Uso:** El formulario o contenedor debe tener `x-data="{ loading: false }"` y en el evento de envío `@submit="loading = true"` (o el evento que corresponda). El componente muestra el spinner y deshabilita el botón mientras `loading` sea true.
+- **Ejemplo:** Ver `resources/views/pages/auth/signin.blade.php`. Para otras acciones (por ejemplo AJAX), exponer una variable `loading` en el scope Alpine y pasarla al botón o usar el mismo patrón.
 
 ## 8. Convenciones de código
 

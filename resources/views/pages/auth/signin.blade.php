@@ -11,18 +11,8 @@
                         <img src="{{ asset('images/logo/logo_oficial.png') }}" alt="Botica J&amp;L" class="h-10 w-auto object-contain" />
                     </a>
                 </div>
-                <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center" x-data="{ loading: false }">
-                    <div class="relative">
-                        <!-- Overlay + loader al enviar -->
-                        <div x-show="loading"
-                             x-transition:enter="transition ease-out duration-150"
-                             x-transition:enter-start="opacity-0"
-                             x-transition:enter-end="opacity-100"
-                             class="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl bg-white/90 dark:bg-gray-900/90"
-                             style="display: none;">
-                            <div class="h-12 w-12 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
-                            <p class="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">Verificando...</p>
-                        </div>
+                <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
+                    <div>
                         <div class="mb-5 sm:mb-8">
                             <h1 class="text-title-sm sm:text-title-md mb-2 font-semibold text-gray-800 dark:text-white/90">
                                 Iniciar sesión
@@ -39,7 +29,7 @@
                                     @endforeach
                                 </div>
                             @endif
-                            <form method="POST" action="{{ route('login') }}" @submit="loading = true">
+                            <form method="POST" action="{{ route('login') }}" x-data="{ loading: false }" @submit="loading = true">
                                 @csrf
                                 <div class="space-y-5">
                                     <div>
@@ -48,8 +38,7 @@
                                         </label>
                                         <input type="text" id="usuario" name="usuario" value="{{ old('usuario') }}"
                                             placeholder="Usuario" autocomplete="username" required autofocus
-                                            :disabled="loading"
-                                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 disabled:opacity-60 disabled:cursor-not-allowed @error('usuario') border-red-500 dark:border-red-500 @enderror" />
+                                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('usuario') border-red-500 dark:border-red-500 @enderror" />
                                     </div>
                                     <div>
                                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400" for="clave">
@@ -58,8 +47,7 @@
                                         <div x-data="{ showPassword: false }" class="relative">
                                             <input :type="showPassword ? 'text' : 'password'" id="clave" name="clave"
                                                 placeholder="Contraseña" autocomplete="current-password" required
-                                                :disabled="loading"
-                                                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 disabled:opacity-60 disabled:cursor-not-allowed @error('clave') border-red-500 dark:border-red-500 @enderror" />
+                                                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('clave') border-red-500 dark:border-red-500 @enderror" />
                                             <span @click="showPassword = !showPassword"
                                                 class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400">
                                                 <svg x-show="!showPassword" class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,15 +62,12 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button type="submit"
-                                                :disabled="loading"
-                                                class="bg-brand-500 shadow-theme-xs hover:bg-brand-600 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-80">
-                                            <span x-show="!loading">Iniciar sesión</span>
-                                            <span x-show="loading" class="flex items-center gap-2" style="display: none;">
-                                                <span class="h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent"></span>
-                                                Cargando...
-                                            </span>
-                                        </button>
+                                        <x-ui.button-loader
+                                            type="submit"
+                                            label="Iniciar sesión"
+                                            loading-text="Cargando..."
+                                            class="bg-brand-500 shadow-theme-xs hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        />
                                     </div>
                                 </div>
                             </form>
