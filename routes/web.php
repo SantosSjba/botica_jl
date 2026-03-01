@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 
 // ========== Rutas de autenticación (invitados) ==========
 Route::middleware('guest')->group(function () {
@@ -13,10 +14,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // ========== Rutas del panel (requieren autenticación) ==========
 Route::middleware('auth')->group(function () {
-    // Dashboard
-    Route::get('/', function () {
-        return view('pages.dashboard.ecommerce', ['title' => 'Inicio']);
-    })->name('dashboard');
+    // Dashboard (inicio migrado)
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Páginas en desarrollo (mensaje único)
     Route::get('/en-desarrollo', function () {
