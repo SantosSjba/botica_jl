@@ -6,45 +6,72 @@ class MenuHelper
 {
     public static function getMainNavItems()
     {
+        $enDesarrollo = route('en-desarrollo');
         return [
             [
                 'icon' => 'dashboard',
-                'name' => 'Dashboard',
-                'subItems' => [
-                    ['name' => 'Ecommerce', 'path' => '/'],
-                ],
+                'name' => 'Inicio',
+                'path' => '/',
             ],
             [
-                'icon' => 'calendar',
-                'name' => 'Calendar',
-                'path' => '/calendar',
+                'icon' => 'ecommerce',
+                'name' => 'Ventas',
+                'path' => $enDesarrollo,
+            ],
+            [
+                'icon' => 'ecommerce',
+                'name' => 'Compras',
+                'path' => $enDesarrollo,
+            ],
+            [
+                'icon' => 'task',
+                'name' => 'Productos',
+                'path' => $enDesarrollo,
             ],
             [
                 'icon' => 'user-profile',
-                'name' => 'User Profile',
-                'path' => '/profile',
+                'name' => 'Clientes',
+                'path' => $enDesarrollo,
             ],
             [
-                'name' => 'Forms',
+                'name' => 'Caja',
+                'icon' => 'support-ticket',
+                'path' => $enDesarrollo,
+            ],
+            [
+                'name' => 'Reportes',
+                'icon' => 'charts',
+                'path' => $enDesarrollo,
+            ],
+            [
+                'name' => 'Notas de crédito',
                 'icon' => 'forms',
-                'subItems' => [
-                    ['name' => 'Form Elements', 'path' => '/form-elements', 'pro' => false],
-                ],
+                'path' => $enDesarrollo,
             ],
             [
-                'name' => 'Tables',
+                'name' => 'Usuarios',
+                'icon' => 'user-profile',
+                'path' => $enDesarrollo,
+            ],
+            [
+                'name' => 'Catálogos',
                 'icon' => 'tables',
                 'subItems' => [
-                    ['name' => 'Basic Tables', 'path' => '/basic-tables', 'pro' => false]
+                    ['name' => 'Categorías', 'path' => $enDesarrollo],
+                    ['name' => 'Presentación', 'path' => $enDesarrollo],
+                    ['name' => 'Lote', 'path' => $enDesarrollo],
+                    ['name' => 'Síntomas', 'path' => $enDesarrollo],
                 ],
             ],
             [
-                'name' => 'Pages',
-                'icon' => 'pages',
-                'subItems' => [
-                    ['name' => 'Blank Page', 'path' => '/blank', 'pro' => false],
-                    ['name' => '404 Error', 'path' => '/error-404', 'pro' => false]
-                ],
+                'name' => 'Configuración',
+                'icon' => 'ui-elements',
+                'path' => $enDesarrollo,
+            ],
+            [
+                'name' => 'Backup',
+                'icon' => 'task',
+                'path' => $enDesarrollo,
             ],
         ];
     }
@@ -53,32 +80,14 @@ class MenuHelper
     {
         return [
             [
-                'icon' => 'charts',
-                'name' => 'Charts',
-                'subItems' => [
-                    ['name' => 'Line Chart', 'path' => '/line-chart', 'pro' => false],
-                    ['name' => 'Bar Chart', 'path' => '/bar-chart', 'pro' => false]
-                ],
+                'icon' => 'calendar',
+                'name' => 'Calendario',
+                'path' => '/calendar',
             ],
             [
-                'icon' => 'ui-elements',
-                'name' => 'UI Elements',
-                'subItems' => [
-                    ['name' => 'Alerts', 'path' => '/alerts', 'pro' => false],
-                    ['name' => 'Avatar', 'path' => '/avatars', 'pro' => false],
-                    ['name' => 'Badge', 'path' => '/badge', 'pro' => false],
-                    ['name' => 'Buttons', 'path' => '/buttons', 'pro' => false],
-                    ['name' => 'Images', 'path' => '/image', 'pro' => false],
-                    ['name' => 'Videos', 'path' => '/videos', 'pro' => false],
-                ],
-            ],
-            [
-                'icon' => 'authentication',
-                'name' => 'Authentication',
-                'subItems' => [
-                    ['name' => 'Sign In', 'path' => '/signin', 'pro' => false],
-                    ['name' => 'Sign Up', 'path' => '/signup', 'pro' => false],
-                ],
+                'icon' => 'user-profile',
+                'name' => 'Perfil',
+                'path' => '/profile',
             ],
         ];
     }
@@ -87,11 +96,11 @@ class MenuHelper
     {
         return [
             [
-                'title' => 'Menu',
+                'title' => 'Sistema Farmacia',
                 'items' => self::getMainNavItems()
             ],
             [
-                'title' => 'Others',
+                'title' => 'Otros',
                 'items' => self::getOthersItems()
             ]
         ];

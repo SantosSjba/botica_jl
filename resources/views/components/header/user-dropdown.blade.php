@@ -13,11 +13,11 @@
         @click.prevent="toggleDropdown()"
         type="button"
     >
-        <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-            <img src="/images/user/owner.png" alt="User" />
+        <span class="mr-3 flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 text-lg font-semibold">
+            {{ strtoupper(mb_substr(auth()->user()->usuario ?? 'U', 0, 1)) }}
         </span>
 
-       <span class="block mr-1 font-medium text-theme-sm">Musharof</span>
+       <span class="block mr-1 font-medium text-theme-sm">{{ auth()->user()->usuario ?? auth()->user()->nombres ?? 'Usuario' }}</span>
 
         <!-- Chevron Icon -->
         <svg
@@ -45,8 +45,8 @@
     >
         <!-- User Info -->
         <div>
-            <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">Musharof Chowdhury</span>
-            <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">randomuser@pimjo.com</span>
+            <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">{{ auth()->user()->nombres ?? auth()->user()->usuario }}</span>
+            <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">{{ auth()->user()->email ?? auth()->user()->usuario }}</span>
         </div>
 
         <!-- Menu Items -->
@@ -54,7 +54,7 @@
             @php
                 $menuItems = [
                     [
-                        'text' => 'Edit profile',
+                        'text' => 'Editar perfil',
                         'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 fill-rule="evenodd"
@@ -63,10 +63,10 @@
                                 fill="currentColor"
                             />
                         </svg>',
-                        'path' => 'profile',
+                        'path' => route('profile'),
                     ],
                     [
-                        'text' => 'Account settings',
+                        'text' => 'Configuración de cuenta',
                         'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                            <path
                             fill-rule="evenodd"
@@ -75,10 +75,10 @@
                             fill="currentColor"
                         />
                         </svg>',
-                        'path' => 'chat'
+                        'path' => route('en-desarrollo')
                     ],
                     [
-                        'text' => 'Support',
+                        'text' => 'Soporte',
                         'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             fill-rule="evenodd"
@@ -87,7 +87,7 @@
                             fill="currentColor"
                           />
                         </svg>',
-                        'path' => 'profile'
+                        'path' => route('en-desarrollo')
                     ],
                 ];
             @endphp
@@ -107,22 +107,20 @@
             @endforeach
         </ul>
 
-        <!-- Sign Out -->
-        {{-- <form method="POST" action="#">
-            @csrf --}}
-            <a
-                href="/signin"
-                class="flex items-center w-full gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-                @click="closeDropdown()"
-            >
+        <!-- Cerrar sesión -->
+        <form method="POST" action="{{ route('logout') }}" class="mt-3">
+            @csrf
+            <button type="submit"
+                class="flex w-full items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                @click="closeDropdown()">
                 <span class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
                 </span>
-                Sign out
-            </a>
-        {{-- </form> --}}
+                Cerrar sesión
+            </button>
+        </form>
     </div>
     <!-- Dropdown End -->
 </div>

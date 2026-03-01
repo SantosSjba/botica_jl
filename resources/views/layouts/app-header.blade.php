@@ -49,9 +49,8 @@
             </button>
 
             <!-- Logo (mobile only) -->
-            <a href="/" class="xl:hidden">
-                <img class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" />
-                <img class="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" />
+            <a href="{{ route('dashboard') }}" class="xl:hidden">
+                <img class="h-8 w-auto object-contain" src="{{ asset('images/logo/logo_oficial.png') }}" alt="Botica J&amp;L" />
             </a>
 
             <!-- Application Menu Toggle (mobile only) -->
