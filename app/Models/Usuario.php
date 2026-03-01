@@ -61,4 +61,26 @@ class Usuario extends Authenticatable
     {
         return null;
     }
+
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class, 'idusuario', 'idusu');
+    }
+
+    /** No se puede eliminar si tiene ventas o movimientos de caja. */
+    public function puedeEliminar(): bool
+    {
+        if ($this->ventas()->exists()) {
+            return false;
+        }
+        return !\App\Models\CajaApertura::where('usuario', $this->usuario)->exists();
+    }
+
+    public function mensajeNoEliminable(): string
+    {
+        if ($this->ventas()->exists()) {
+            return 'No se puede eliminar el usuario porque tiene ventas registradas.';
+        }
+        return 'No se puede eliminar el usuario porque tiene movimientos de caja asociados.';
+    }
 }

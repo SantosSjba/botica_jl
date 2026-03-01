@@ -6,7 +6,11 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Mantenimiento\CategoriaController as MantenimientoCategoriaController;
+use App\Http\Controllers\Mantenimiento\LoteController as MantenimientoLoteController;
+use App\Http\Controllers\Mantenimiento\PresentacionController as MantenimientoPresentacionController;
 use App\Http\Controllers\Mantenimiento\ProductoController as MantenimientoProductoController;
+use App\Http\Controllers\Mantenimiento\SintomaController as MantenimientoSintomaController;
+use App\Http\Controllers\Mantenimiento\UsuarioController as MantenimientoUsuarioController;
 
 // ========== Rutas de autenticación (invitados) ==========
 Route::middleware('guest')->group(function () {
@@ -34,6 +38,10 @@ Route::middleware('auth')->group(function () {
 
     // Mantenimiento: Forma farmacéutica (Categoría)
     Route::resource('mantenimiento/categorias', MantenimientoCategoriaController::class)->names('mantenimiento.categorias');
+    Route::resource('mantenimiento/presentaciones', MantenimientoPresentacionController::class)->names('mantenimiento.presentaciones');
+    Route::resource('mantenimiento/sintomas', MantenimientoSintomaController::class)->names('mantenimiento.sintomas');
+    Route::resource('mantenimiento/lotes', MantenimientoLoteController::class)->names('mantenimiento.lotes');
+    Route::resource('mantenimiento/usuarios', MantenimientoUsuarioController::class)->names('mantenimiento.usuarios');
 
     // Páginas en desarrollo (mensaje único)
     Route::get('/en-desarrollo', function () {

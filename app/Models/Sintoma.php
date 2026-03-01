@@ -18,4 +18,14 @@ class Sintoma extends Model
     {
         return $this->hasMany(Producto::class, 'idsintoma', 'idsintoma');
     }
+
+    public function puedeEliminar(): bool
+    {
+        return !$this->productos()->exists();
+    }
+
+    public function mensajeNoEliminable(): string
+    {
+        return 'No se puede eliminar el síntoma porque tiene productos asociados.';
+    }
 }

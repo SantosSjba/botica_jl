@@ -46,10 +46,10 @@ class MenuHelper
                     ['name' => 'Cliente / Laboratorio', 'path' => route('mantenimiento.clientes.index')],
                     ['name' => 'Producto', 'path' => route('mantenimiento.productos.index')],
                     ['name' => 'Forma farmacéutica', 'path' => route('mantenimiento.categorias.index')],
-                    ['name' => 'Presentación', 'path' => $enDesarrollo],
-                    ['name' => 'Usuario', 'path' => $enDesarrollo],
-                    ['name' => 'Síntomas', 'path' => $enDesarrollo],
-                    ['name' => 'Lote', 'path' => $enDesarrollo],
+                    ['name' => 'Presentación', 'path' => route('mantenimiento.presentaciones.index')],
+                    ['name' => 'Usuario', 'path' => route('mantenimiento.usuarios.index')],
+                    ['name' => 'Síntomas', 'path' => route('mantenimiento.sintomas.index')],
+                    ['name' => 'Lote', 'path' => route('mantenimiento.lotes.index')],
                 ],
             ];
         } else {

@@ -22,4 +22,14 @@ class Lote extends Model
     {
         return $this->hasMany(Producto::class, 'idlote', 'idlote');
     }
+
+    public function puedeEliminar(): bool
+    {
+        return !$this->productos()->exists();
+    }
+
+    public function mensajeNoEliminable(): string
+    {
+        return 'No se puede eliminar el lote porque tiene productos asociados.';
+    }
 }

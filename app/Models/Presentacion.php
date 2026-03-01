@@ -18,4 +18,14 @@ class Presentacion extends Model
     {
         return $this->hasMany(Producto::class, 'idpresentacion', 'idpresentacion');
     }
+
+    public function puedeEliminar(): bool
+    {
+        return !$this->productos()->exists();
+    }
+
+    public function mensajeNoEliminable(): string
+    {
+        return 'No se puede eliminar la presentación porque tiene productos asociados.';
+    }
 }
