@@ -14,6 +14,14 @@ class MenuHelper
                 'path' => '/',
             ],
             [
+                'name' => 'Consultas',
+                'icon' => 'tables',
+                'path' => '#',
+                'subItems' => [
+                    ['name' => 'Productos farmacéuticos', 'path' => '/consulta/productos'],
+                ],
+            ],
+            [
                 'icon' => 'ecommerce',
                 'name' => 'Ventas',
                 'path' => $enDesarrollo,

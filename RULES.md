@@ -99,6 +99,12 @@ Reutilizar la **lógica de negocio** del código original; reimplementar en Lara
 - **Uso:** El formulario o contenedor debe tener `x-data="{ loading: false }"` y en el evento de envío `@submit="loading = true"` (o el evento que corresponda). El componente muestra el spinner y deshabilita el botón mientras `loading` sea true.
 - **Ejemplo:** Ver `resources/views/pages/auth/signin.blade.php`. Para otras acciones (por ejemplo AJAX), exponer una variable `loading` en el scope Alpine y pasarla al botón o usar el mismo patrón.
 
+### 7.1 Actualización de datos sin recargar página (AJAX)
+
+- En **consultas y listados** (tablas con búsqueda, orden y paginación), la búsqueda y la navegación (orden por columna, paginación) deben **actualizar solo los datos** (el bloque de la tabla), no recargar toda la página (F5).
+- **Patrón:** El controlador detecta peticiones AJAX (`$request->ajax()` o cabecera `X-Requested-With: XMLHttpRequest`) y devuelve solo el fragmento de vista con la tabla y la paginación (un partial). La vista principal incluye ese partial dentro de un contenedor con id; un script hace `fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })`, reemplaza el `innerHTML` del contenedor con la respuesta y actualiza la URL con `history.pushState` para que el estado quede reflejado en el navegador.
+- **Referencia:** Consulta de productos farmacéuticos: `ConsultaProductosController`, vista `pages/consulta/productos.blade.php`, partial `_tabla-productos.blade.php` y script en `@push('scripts')`.
+
 ## 8. Convenciones de código
 
 - **PHP:** PSR-12. Type hints en métodos y propiedades donde sea posible.

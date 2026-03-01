@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
 
 // ========== Rutas de autenticación (invitados) ==========
@@ -16,6 +17,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware('auth')->group(function () {
     // Dashboard (inicio migrado)
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Consultas
+    Route::get('/consulta/productos', [ConsultaProductosController::class, 'index'])->name('consulta.productos');
 
     // Páginas en desarrollo (mensaje único)
     Route::get('/en-desarrollo', function () {

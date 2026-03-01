@@ -15,23 +15,33 @@ class DashboardController extends Controller
 {
     public function index(Request $request): View
     {
+        $data = $this->getData($request);
+        $ajax = $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest';
+
+        if ($ajax) {
+            return view('pages.dashboard._datos-dashboard', $data);
+        }
+
         $usuario = auth()->user();
         $usu = $usuario->usuario;
         $hoy = now()->toDateString();
-
-        // Razón social y símbolo moneda
         $config = Configuracion::first();
         $razonSocial = $config?->razon_social ?? '';
-        $simboloMoneda = $config?->simbolo_moneda ?? 'S/';
-
-        // Monto apertura caja del día (usuario actual)
-        $cajaHoy = CajaApertura::where('usuario', $usu)
-            ->where('fecha', $hoy)
-            ->orderByDesc('idcaja_a')
-            ->first();
+        $simboloMoneda = $data['simboloMoneda'];
+        $cajaHoy = CajaApertura::where('usuario', $usu)->where('fecha', $hoy)->orderByDesc('idcaja_a')->first();
         $montoCaja = $cajaHoy ? (float) $cajaHoy->monto : 0;
 
-        // Filtros resumen financiero
+        return view('pages.dashboard.inicio', array_merge($data, [
+            'title' => 'Inicio',
+            'usuario' => $usu,
+            'razonSocial' => $razonSocial,
+            'montoCaja' => $montoCaja,
+        ]));
+    }
+
+    /** @return array<string, mixed> */
+    protected function getData(Request $request): array
+    {
         $primerDiaMes = now()->startOfMonth()->toDateString();
         $ultimoDiaMes = now()->endOfMonth()->toDateString();
         $fechaDesde = $request->input('fecha_desde', $primerDiaMes);
@@ -47,17 +57,9 @@ class DashboardController extends Controller
             $fechaHasta = $ultimoDiaMes;
         }
 
-        // Lista usuarios activos para el filtro
         $listaUsuarios = Usuario::where('estado', 'Activo')
             ->orderBy('nombres')
             ->get(['idusu', 'usuario', 'nombres']);
-
-        // Resumen financiero (solo si hay usuarios y ventas)
-        $ventas = 0;
-        $costos = 0;
-        $ganancia = 0;
-        $gastos = 0;
-        $neto = 0;
 
         $queryVentas = Venta::whereBetween('fecha_emision', [$fechaDesde, $fechaHasta])
             ->where('estado', '!=', 'anulado');
@@ -79,9 +81,9 @@ class DashboardController extends Controller
         )->value('total');
 
         $ganancia = $ventas - $costos;
+        $gastos = 0;
         $neto = $ganancia - $gastos;
 
-        // Productos por vencer (14 días) o vencidos
         $productosPorVencer = Producto::query()
             ->join('lote', 'productos.idlote', '=', 'lote.idlote')
             ->whereRaw('DATE_SUB(lote.fecha_vencimiento, INTERVAL 14 DAY) <= CURDATE()')
@@ -89,7 +91,6 @@ class DashboardController extends Controller
             ->orderBy('lote.fecha_vencimiento')
             ->get();
 
-        // Productos con bajo stock (stock <= stockminimo, con mínimo 1 para no vacío)
         $productosBajoStock = Producto::query()
             ->join('lote', 'productos.idlote', '=', 'lote.idlote')
             ->whereRaw('productos.stock <= GREATEST(productos.stockminimo, 1)')
@@ -97,11 +98,9 @@ class DashboardController extends Controller
             ->orderBy('productos.stock')
             ->get();
 
-        return view('pages.dashboard.inicio', [
-            'title' => 'Inicio',
-            'usuario' => $usu,
-            'razonSocial' => $razonSocial,
-            'montoCaja' => $montoCaja,
+        $simboloMoneda = Configuracion::first()?->simbolo_moneda ?? 'S/';
+
+        return [
             'fechaDesde' => $fechaDesde,
             'fechaHasta' => $fechaHasta,
             'filtroUsuario' => $filtroUsuario,
@@ -114,6 +113,6 @@ class DashboardController extends Controller
             'productosPorVencer' => $productosPorVencer,
             'productosBajoStock' => $productosBajoStock,
             'simboloMoneda' => $simboloMoneda,
-        ]);
+        ];
     }
 }

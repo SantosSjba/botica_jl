@@ -31,4 +31,14 @@ class Producto extends Model
     {
         return $this->belongsTo(Lote::class, 'idlote', 'idlote');
     }
+
+    public function presentacion()
+    {
+        return $this->belongsTo(Presentacion::class, 'idpresentacion', 'idpresentacion');
+    }
+
+    public function sintoma()
+    {
+        return $this->belongsTo(Sintoma::class, 'idsintoma', 'idsintoma');
+    }
 }
