@@ -45,7 +45,7 @@ class MenuHelper
                 'subItems' => [
                     ['name' => 'Cliente / Laboratorio', 'path' => route('mantenimiento.clientes.index')],
                     ['name' => 'Producto', 'path' => route('mantenimiento.productos.index')],
-                    ['name' => 'Forma farmacéutica', 'path' => $enDesarrollo],
+                    ['name' => 'Forma farmacéutica', 'path' => route('mantenimiento.categorias.index')],
                     ['name' => 'Presentación', 'path' => $enDesarrollo],
                     ['name' => 'Usuario', 'path' => $enDesarrollo],
                     ['name' => 'Síntomas', 'path' => $enDesarrollo],

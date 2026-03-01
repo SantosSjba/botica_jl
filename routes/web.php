@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Mantenimiento\CategoriaController as MantenimientoCategoriaController;
 use App\Http\Controllers\Mantenimiento\ProductoController as MantenimientoProductoController;
 
 // ========== Rutas de autenticación (invitados) ==========
@@ -30,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::get('mantenimiento/productos/export/excel', [MantenimientoProductoController::class, 'exportExcel'])->name('mantenimiento.productos.export.excel');
     Route::get('mantenimiento/productos/export/pdf', [MantenimientoProductoController::class, 'exportPdf'])->name('mantenimiento.productos.export.pdf');
     Route::resource('mantenimiento/productos', MantenimientoProductoController::class)->names('mantenimiento.productos');
+
+    // Mantenimiento: Forma farmacéutica (Categoría)
+    Route::resource('mantenimiento/categorias', MantenimientoCategoriaController::class)->names('mantenimiento.categorias');
 
     // Páginas en desarrollo (mensaje único)
     Route::get('/en-desarrollo', function () {
