@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Mantenimiento\ProductoController as MantenimientoProductoController;
 
 // ========== Rutas de autenticación (invitados) ==========
 Route::middleware('guest')->group(function () {
@@ -24,6 +25,11 @@ Route::middleware('auth')->group(function () {
 
     // Mantenimiento: Cliente / Laboratorio (accesible por ADMIN y USUARIO)
     Route::resource('mantenimiento/clientes', ClienteController::class)->names('mantenimiento.clientes');
+
+    // Mantenimiento: Producto (solo ADMIN) — export antes del resource para no capturar por show
+    Route::get('mantenimiento/productos/export/excel', [MantenimientoProductoController::class, 'exportExcel'])->name('mantenimiento.productos.export.excel');
+    Route::get('mantenimiento/productos/export/pdf', [MantenimientoProductoController::class, 'exportPdf'])->name('mantenimiento.productos.export.pdf');
+    Route::resource('mantenimiento/productos', MantenimientoProductoController::class)->names('mantenimiento.productos');
 
     // Páginas en desarrollo (mensaje único)
     Route::get('/en-desarrollo', function () {
