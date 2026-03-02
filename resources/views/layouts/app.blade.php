@@ -8,6 +8,8 @@
 
     <title>{{ $title ?? 'Inicio' }} | Botica J&amp;L - Sistema Farmacia</title>
 
+    <!-- Axios (debe cargarse antes que el bundle para que los scripts en línea tengan window.axios) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.7/dist/axios.min.js" crossorigin="anonymous"></script>
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 

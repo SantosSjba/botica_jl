@@ -270,17 +270,19 @@ document.addEventListener('alpine:init', function() {
                 const loadingEl = document.getElementById('ventas-carrito-loading');
                 if (loadingEl) { loadingEl.classList.remove('hidden'); loadingEl.classList.add('flex'); }
                 try {
+                    const ax = window.axios;
+                    if (!ax) throw new Error('Axios no disponible');
                     const [carritoRes, totalRes, igvRes] = await Promise.all([
-                        fetch(this.routes.carrito, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } }),
-                        fetch(this.routes.total, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } }),
-                        fetch(this.routes.igv, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } }),
+                        ax.get(this.routes.carrito, { headers: { 'Accept': 'text/html' }, responseType: 'text' }),
+                        ax.get(this.routes.total, { headers: { 'Accept': 'text/html' }, responseType: 'text' }),
+                        ax.get(this.routes.igv, { headers: { 'Accept': 'text/html' }, responseType: 'text' }),
                     ]);
                     const c = document.getElementById('ventas-carrito-container');
                     const t = document.getElementById('ventas-total-container');
                     const i = document.getElementById('ventas-igv-container');
-                    if (c) c.innerHTML = await carritoRes.text();
-                    if (t) t.innerHTML = await totalRes.text();
-                    if (i) i.innerHTML = await igvRes.text();
+                    if (c) c.innerHTML = carritoRes.data;
+                    if (t) t.innerHTML = totalRes.data;
+                    if (i) i.innerHTML = igvRes.data;
                     if (typeof window.ventasActualizarPagosResumen === 'function') window.ventasActualizarPagosResumen();
                     this.rebindCarrito();
                     if (typeof window.ventasActualizarVuelto === 'function') window.ventasActualizarVuelto();
@@ -295,8 +297,8 @@ document.addEventListener('alpine:init', function() {
                 if (!cod) return;
                 this.barcodeLoading = true;
                 try {
-                    const res = await fetch(this.routes.barcode, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' }, body: JSON.stringify({ cod }) });
-                    const data = await res.json();
+                    const res = await window.axios.post(this.routes.barcode, { cod });
+                    const data = res.data;
                     if (data.success) {
                         if (input) input.value = '';
                         await this.refreshCarrito('Producto agregado');
@@ -337,20 +339,20 @@ document.addEventListener('alpine:init', function() {
                 });
             },
             async quitarItem(id) {
-                const res = await fetch(this.routes.quitar, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' }, body: JSON.stringify({ id }) });
-                const data = await res.json();
+                const res = await window.axios.post(this.routes.quitar, { id });
+                const data = res.data;
                 if (data.success) await this.refreshCarrito('Producto quitado');
             },
             async actualizarCantidad(id, text) {
-                const res = await fetch(this.routes.actualizarCantidad, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' }, body: JSON.stringify({ id, text }) });
-                const data = await res.json();
+                const res = await window.axios.post(this.routes.actualizarCantidad, { id, text });
+                const data = res.data;
                 if (data.success) await this.refreshCarrito('Actualizado');
                 else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'warning');
                 else if (data.message) alert(data.message);
             },
             async actualizarPrecio(id, text) {
-                const res = await fetch(this.routes.actualizarPrecio, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' }, body: JSON.stringify({ id, text }) });
-                const data = await res.json();
+                const res = await window.axios.post(this.routes.actualizarPrecio, { id, text });
+                const data = res.data;
                 if (data.success) await this.refreshCarrito('Actualizado');
             },
             abrirModalProductos() {
@@ -374,8 +376,8 @@ document.addEventListener('alpine:init', function() {
                 if (!body) return;
                 this.modalBuscarLoading = true;
                 try {
-                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } });
-                    body.innerHTML = await res.text();
+                    const res = await window.axios.get(url, { headers: { 'Accept': 'text/html' }, responseType: 'text' });
+                    body.innerHTML = res.data;
                     this.rebindModalProductos();
                 } catch (e) {
                     body.innerHTML = '<p class="text-sm text-red-500">Error al cargar productos.</p>';
@@ -409,8 +411,8 @@ document.addEventListener('alpine:init', function() {
             },
             async agregarProducto(idproducto, des, pres, pre, cantidad) {
                 cantidad = cantidad || 1;
-                const res = await fetch(this.routes.agregar, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' }, body: JSON.stringify({ idproducto, des, pres, pre, cantidad }) });
-                const data = await res.json();
+                const res = await window.axios.post(this.routes.agregar, { idproducto, des, pres, pre, cantidad });
+                const data = res.data;
                 if (data.success) { await this.refreshCarrito('Producto agregado'); document.getElementById('ventas-cod').value = ''; }
             },
             async registrarVenta(e) {
@@ -451,8 +453,8 @@ document.addEventListener('alpine:init', function() {
                 if (numero === '') fd.set('numero', '00000000');
                 const firstTipo = document.querySelector('.ventas-pago-tipo');
                 if (firstTipo && form.querySelector('#forma')) form.querySelector('#forma').value = firstTipo.value;
-                const res = await fetch(this.routes.store, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
-                const data = await res.json();
+                const res = await window.axios.post(this.routes.store, fd, { headers: { 'Accept': 'application/json' } });
+                const data = res.data;
                 this.loading = false;
                 if (data.success) {
                     await this.refreshCarrito();
@@ -479,8 +481,7 @@ document.addEventListener('alpine:init', function() {
             const correl = document.getElementById('correl');
             if (v === '01') serie.value = 'F001'; else if (v === '00') serie.value = 'T001'; else if (v === '03') serie.value = 'B001'; else { serie.value = ''; correl.value = ''; }
             if (v) {
-                fetch('{{ route("ventas.correlativo") }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '', 'Accept': 'application/json' }, body: JSON.stringify({ tico: v }) })
-                    .then(r => r.json()).then(d => { if (d.correlativo) correl.value = d.correlativo; });
+                window.axios.post('{{ route("ventas.correlativo") }}', { tico: v }).then(function(r) { if (r.data && r.data.correlativo) correl.value = r.data.correlativo; });
             }
             const opts = document.querySelectorAll('#td option');
             if (v === '01') { opts.forEach(o => { o.disabled = (o.value !== '4'); }); }

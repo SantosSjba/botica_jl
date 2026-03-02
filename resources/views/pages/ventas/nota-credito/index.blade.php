@@ -130,12 +130,8 @@ document.addEventListener('alpine:init', function() {
                 if (!s || !c) { this.refError = 'Indique serie y correlativo de referencia.'; return; }
                 this.buscarLoading = true;
                 try {
-                    var res = await fetch(this.routes.buscar, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' },
-                        body: JSON.stringify({ serie_ref: s, correlativo_ref: c })
-                    });
-                    var data = await res.json();
+                    var res = await window.axios.post(this.routes.buscar, { serie_ref: s, correlativo_ref: c });
+                    var data = res.data;
                     if (data.success) {
                         this.idventa = data.idventa;
                         this.serieRef = data.serie_ref;
@@ -151,12 +147,8 @@ document.addEventListener('alpine:init', function() {
             },
             async obtenerCorrelativo() {
                 if (!this.serieN) { this.correlativoN = ''; return; }
-                var res = await fetch(this.routes.correlativo, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' },
-                    body: JSON.stringify({ serie_n: this.serieN })
-                });
-                var data = await res.json();
+                var res = await window.axios.post(this.routes.correlativo, { serie_n: this.serieN });
+                var data = res.data;
                 if (data.success && data.correlativo) this.correlativoN = data.correlativo;
             },
             async submitForm() {
@@ -169,8 +161,8 @@ document.addEventListener('alpine:init', function() {
                 fd.set('correlativo_n', this.correlativoN);
                 this.submitLoading = true;
                 try {
-                    var res = await fetch(this.routes.store, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
-                    var data = await res.json();
+                    var res = await window.axios.post(this.routes.store, fd, { headers: { 'Accept': 'application/json' } });
+                    var data = res.data;
                     if (data.success) {
                         if (typeof window.showToast === 'function') window.showToast(data.message || 'Nota de crédito registrada.', 'success');
                         else alert(data.message);

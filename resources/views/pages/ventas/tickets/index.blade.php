@@ -55,8 +55,8 @@
     }
     function updateTabla(url, pushState) {
         setLoading(true);
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } })
-            .then(function(r) { return r.text(); })
+        window.axios.get(url, { headers: { 'Accept': 'text/html' }, responseType: 'text' })
+            .then(function(r) { return r.data; })
             .then(function(html) {
                 if (container) container.innerHTML = html;
                 if (pushState !== false) window.history.pushState({}, '', url);
@@ -74,12 +74,8 @@
                 if (!id) return;
                 if (!confirm('¿Anular este ticket? Se devolverá el stock de los productos.')) return;
                 btn.disabled = true;
-                fetch(anularUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
-                    body: JSON.stringify({ id: id })
-                })
-                .then(function(r) { return r.json(); })
+                window.axios.post(anularUrl, { id: id })
+                .then(function(r) { var data = r.data; return data; })
                 .then(function(data) {
                     if (typeof window.showToast === 'function') window.showToast(data.message || (data.success ? 'Anulado.' : 'Error.'), data.success ? 'success' : 'error');
                     else alert(data.message || (data.success ? 'Anulado.' : 'Error.'));

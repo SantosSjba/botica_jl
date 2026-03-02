@@ -77,8 +77,8 @@
 
     function updateTabla(url, pushState) {
         setLoading(true);
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' } })
-            .then(function(r) { return r.text(); })
+        window.axios.get(url, { headers: { 'Accept': 'text/html' }, responseType: 'text' })
+            .then(function(r) { return r.data; })
             .then(function(html) {
                 if (container) container.innerHTML = html;
                 if (pushState !== false) window.history.pushState({}, '', url);

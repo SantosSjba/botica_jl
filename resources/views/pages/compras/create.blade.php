@@ -126,10 +126,9 @@
     var debounceProveedor = null;
 
     function actualizarCarrito() {
-        fetch(baseUrl + '/carrito/partials', {
-            method: 'GET',
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        }).then(function(r) { return r.json(); }).then(function(data) {
+        if (typeof window.axios === 'undefined') return;
+        window.axios.get(baseUrl + '/carrito/partials').then(function(r) {
+            var data = r.data;
             if (data.table) tablaContainer.innerHTML = data.table;
             if (data.totales) totalesContainer.innerHTML = data.totales;
             bindCarritoEvents();
@@ -140,11 +139,8 @@
         tablaContainer.querySelectorAll('.compras-quitar').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var id = btn.getAttribute('data-idproducto');
-                fetch(baseUrl + '/carrito/quitar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    body: JSON.stringify({ idproducto: id })
-                }).then(function(r) { return r.json(); }).then(function(data) {
+                window.axios.post(baseUrl + '/carrito/quitar', { idproducto: id }).then(function(r) {
+                    var data = r.data;
                     if (data.ok) { tablaContainer.innerHTML = data.table; totalesContainer.innerHTML = data.totales; bindCarritoEvents(); }
                     else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'error');
                 });
@@ -156,11 +152,8 @@
                 var id = row.getAttribute('data-idproducto');
                 var cant = parseInt(inp.value, 10) || 1;
                 if (cant < 1) { inp.value = 1; cant = 1; }
-                fetch(baseUrl + '/carrito/actualizar-cantidad', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    body: JSON.stringify({ idproducto: id, cantidad: cant })
-                }).then(function(r) { return r.json(); }).then(function(data) {
+                window.axios.post(baseUrl + '/carrito/actualizar-cantidad', { idproducto: id, cantidad: cant }).then(function(r) {
+                    var data = r.data;
                     if (data.ok) { tablaContainer.innerHTML = data.table; totalesContainer.innerHTML = data.totales; bindCarritoEvents(); }
                     else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'error');
                 });
@@ -171,11 +164,8 @@
                 var row = inp.closest('tr');
                 var id = row.getAttribute('data-idproducto');
                 var precio = parseFloat(inp.value) || 0;
-                fetch(baseUrl + '/carrito/actualizar-precio', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    body: JSON.stringify({ idproducto: id, precio: precio })
-                }).then(function(r) { return r.json(); }).then(function(data) {
+                window.axios.post(baseUrl + '/carrito/actualizar-precio', { idproducto: id, precio: precio }).then(function(r) {
+                    var data = r.data;
                     if (data.ok) { tablaContainer.innerHTML = data.table; totalesContainer.innerHTML = data.totales; bindCarritoEvents(); }
                     else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'error');
                 });
@@ -191,8 +181,8 @@
         btnAgregar.disabled = true;
         if (q.length < 2) { listProductos.classList.add('hidden'); listProductos.innerHTML = ''; return; }
         debounceProducto = setTimeout(function() {
-            fetch(baseUrl + '/buscar-productos?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
+            window.axios.get(baseUrl + '/buscar-productos', { params: { q: q } })
+                .then(function(r) { var arr = r.data; if (!Array.isArray(arr)) arr = []; return arr; })
                 .then(function(arr) {
                     listProductos.innerHTML = '';
                     if (arr.length === 0) { listProductos.classList.add('hidden'); return; }
@@ -224,16 +214,12 @@
     btnAgregar.addEventListener('click', function() {
         if (!productoSeleccionado) return;
         btnAgregar.disabled = true;
-        fetch(baseUrl + '/carrito/agregar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-            body: JSON.stringify({
-                idproducto: productoSeleccionado.idproducto,
-                descripcion: productoSeleccionado.descripcion,
-                presentacion: productoSeleccionado.presentacion,
-                precio: productoSeleccionado.precio
-            })
-        }).then(function(r) { return r.json(); }).then(function(data) {
+        window.axios.post(baseUrl + '/carrito/agregar', {
+            idproducto: productoSeleccionado.idproducto,
+            descripcion: productoSeleccionado.descripcion,
+            presentacion: productoSeleccionado.presentacion,
+            precio: productoSeleccionado.precio
+        }).then(function(r) { var data = r.data; return data; }).then(function(data) {
             if (data.ok) {
                 tablaContainer.innerHTML = data.table;
                 totalesContainer.innerHTML = data.totales;
@@ -255,8 +241,8 @@
         idClienteHidden.value = '';
         if (q.length < 2) { listProveedores.classList.add('hidden'); listProveedores.innerHTML = ''; return; }
         debounceProveedor = setTimeout(function() {
-            fetch(baseUrl + '/buscar-proveedores?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
+            window.axios.get(baseUrl + '/buscar-proveedores', { params: { q: q } })
+                .then(function(r) { var arr = r.data; if (!Array.isArray(arr)) arr = []; return arr; })
                 .then(function(arr) {
                     listProveedores.innerHTML = '';
                     if (arr.length === 0) { listProveedores.classList.add('hidden'); return; }
