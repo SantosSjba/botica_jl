@@ -12,7 +12,7 @@ class MenuHelper
      * - Mantenimiento: solo ADMINISTRADOR; USUARIO ve solo "Clientes" (un enlace).
      * - Ventas: solo si caja abierta.
      * - Caja: ambos; subítems según estado (Apertura/Cierre/Seguimiento).
-     * - Compras, Reportes, Backup, Configuración, Acerca de: solo ADMINISTRADOR.
+     * - Compras, Reportes, Backup, Configuración: solo ADMINISTRADOR.
      */
     public static function getMainNavItems(): array
     {
@@ -98,7 +98,7 @@ class MenuHelper
             ];
         }
 
-        // Compras, Reportes, Backup, Configuración, Acerca de — solo ADMINISTRADOR
+        // Compras, Reportes, Backup, Configuración — solo ADMINISTRADOR
         if (PermisosHelper::isAdministrador()) {
             $items[] = [
                 'name' => 'Compras',
@@ -122,7 +122,6 @@ class MenuHelper
             ];
             $items[] = ['icon' => 'task', 'name' => 'Backup', 'path' => route('backup.index')];
             $items[] = ['name' => 'Configuración', 'icon' => 'ui-elements', 'path' => route('configuracion.index')];
-            $items[] = ['name' => 'Acerca de', 'icon' => 'pages', 'path' => $enDesarrollo];
         }
 
         return $items;
