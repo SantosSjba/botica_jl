@@ -320,12 +320,16 @@ class VentaService
         }
         $idcliente = $cliente->idcliente;
 
-        $serie = Serie::create([
+        $idserie = (int) Serie::max('idserie') + 1;
+        if ($idserie < 1) {
+            $idserie = 1;
+        }
+        Serie::create([
+            'idserie' => $idserie,
             'tipocomp' => $tipocomp,
             'serie' => $data['serie'] ?? 'T001',
             'correlativo' => $correlativo,
         ]);
-        $idserie = $serie->idserie;
 
         $fechaEmision = $data['fecha_emision'] ?? now()->format('Y-m-d');
         $totalVenta = (float) $totales['total'];
@@ -390,6 +394,7 @@ class VentaService
                 'formadepago' => $formaPago,
                 'efectivo' => $efectivo,
                 'vuelto' => $vuelto,
+                'tire' => $data['tire'] ?? 'noenviado',
             ]);
 
             if (!empty($pagos) && is_array($pagos)) {
@@ -431,6 +436,7 @@ class VentaService
                     'porcentaje_igv' => $config ? (float) $config->impuesto : 18,
                     'valor_total' => $row->valor_total,
                     'importe_total' => $row->importe_total,
+                    'descuento' => isset($row->descuento) ? (float) $row->descuento : 0,
                 ]);
                 // Stock ya fue reservado al agregar al carrito; no volver a decrementar
             }

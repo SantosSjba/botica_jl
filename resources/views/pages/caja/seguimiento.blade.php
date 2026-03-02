@@ -9,13 +9,6 @@
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    @if (session('success'))
-        <x-ui.alert variant="success" :message="session('success')" />
-    @endif
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
-    @endif
-
     <x-common.component-card
         :title="'Seguimiento de caja' . ($esAdministrador ? ' (Todos los cajeros)' : '')"
         desc="Listado de aperturas de caja. Filtre por fecha y usuario (solo administrador)."

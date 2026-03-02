@@ -4,13 +4,6 @@
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    @if (session('success'))
-        <x-ui.alert variant="success" :message="session('success')" />
-    @endif
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
-    @endif
-
     <x-common.component-card title="Síntomas" desc="Listado de formas farmacéuticas. Busque, ordene por columnas o agregue nuevos registros.">
         <div class="space-y-4">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

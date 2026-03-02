@@ -11,13 +11,6 @@
 <div class="min-w-0 space-y-6" x-data="notaCreditoForm()">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    @if (session('success'))
-        <x-ui.alert variant="success" :message="session('success')" />
-    @endif
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
-    @endif
-
     <x-common.component-card title="Nota de crédito" desc="Emita una nota de crédito referenciando una factura o boleta. El comprobante de referencia quedará anulado.">
         <form @submit.prevent="submitForm" class="space-y-6">
             @csrf
@@ -179,10 +172,12 @@ document.addEventListener('alpine:init', function() {
                     var res = await fetch(this.routes.store, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
                     var data = await res.json();
                     if (data.success) {
-                        alert(data.message);
+                        if (typeof window.showToast === 'function') window.showToast(data.message || 'Nota de crédito registrada.', 'success');
+                        else alert(data.message);
                         window.location.href = @json(route('notacredito.index'));
                     } else {
-                        alert(data.message || 'Error al registrar.');
+                        if (typeof window.showToast === 'function') window.showToast(data.message || 'Error al registrar.', 'error');
+                        else alert(data.message || 'Error al registrar.');
                     }
                 } finally {
                     this.submitLoading = false;

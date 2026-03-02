@@ -161,9 +161,16 @@
             <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 min-w-0 overflow-x-hidden">
                 @yield('content')
             </div>
-        </div>
-
     </div>
+
+</div>
+
+@if (session('success'))
+    <div class="flash-toast" data-type="success" data-msg="{{ e(session('success')) }}" style="display: none" aria-hidden="true"></div>
+@endif
+@if (session('error'))
+    <div class="flash-toast" data-type="error" data-msg="{{ e(session('error')) }}" style="display: none" aria-hidden="true"></div>
+@endif
 
 </body>
 

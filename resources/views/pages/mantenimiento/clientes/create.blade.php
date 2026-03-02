@@ -3,13 +3,13 @@
 @section('content')
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
+    @if ($errors->any())
+        <div class="flash-toast" data-type="error" data-msg="{{ e(implode(' ', $errors->all())) }}" style="display:none" aria-hidden="true"></div>
+    @endif
 
     <x-common.component-card title="Registrar Cliente / Laboratorio" desc="(*) Campos obligatorios">
         <form action="{{ route('mantenimiento.clientes.store') }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
             @csrf
-            @if ($errors->any())
-                <x-ui.alert variant="error" :message="implode(' ', $errors->all())" />
-            @endif
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label for="nombres" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Razón social <span class="text-red-500">*</span></label>

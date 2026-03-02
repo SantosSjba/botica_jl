@@ -1,4 +1,4 @@
-<div class="space-y-1 text-sm">
+<div class="space-y-0.5 text-xs">
     <div class="flex justify-between">
         <span class="text-gray-600 dark:text-gray-400">OP. GRAVADAS:</span>
         <span class="font-medium text-gray-800 dark:text-white/90">{{ $totales['simbolo_moneda'] }} {{ number_format($totales['op_gravadas'], 2) }}</span>

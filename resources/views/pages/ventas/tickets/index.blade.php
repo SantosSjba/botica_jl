@@ -81,7 +81,8 @@
                 })
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
-                    alert(data.message || (data.success ? 'Anulado.' : 'Error.'));
+                    if (typeof window.showToast === 'function') window.showToast(data.message || (data.success ? 'Anulado.' : 'Error.'), data.success ? 'success' : 'error');
+                    else alert(data.message || (data.success ? 'Anulado.' : 'Error.'));
                     if (data.success) updateTabla(buildUrl());
                 })
                 .finally(function() { btn.disabled = false; });

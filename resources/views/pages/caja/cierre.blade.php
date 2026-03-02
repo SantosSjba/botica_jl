@@ -10,10 +10,6 @@
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
-    @endif
-
     <x-common.component-card title="Cierre de caja" desc="Verifique los totales e ingrese el efectivo físico en caja para cerrar.">
         <form action="{{ route('caja.store-cierre') }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6" id="form-cierre-caja">
             @csrf

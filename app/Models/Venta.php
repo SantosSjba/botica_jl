@@ -15,7 +15,7 @@ class Venta extends Model
     protected $fillable = [
         'idventa', 'idconf', 'tipocomp', 'idcliente', 'idusuario', 'idserie', 'fecha_emision',
         'op_gravadas', 'op_exoneradas', 'op_inafectas', 'igv', 'total', 'estado', 'feestado', 'numope',
-        'formadepago', 'efectivo', 'vuelto', 'nombrexml', 'femensajesunat',
+        'formadepago', 'efectivo', 'vuelto', 'tire', 'nombrexml', 'femensajesunat',
     ];
 
     protected $casts = [

@@ -11,16 +11,13 @@
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
+    @if ($errors->any())
+        <div class="flash-toast" data-type="error" data-msg="{{ e(implode(' ', $errors->all())) }}" style="display:none" aria-hidden="true"></div>
     @endif
 
     <x-common.component-card title="Apertura de caja" desc="Registre el monto inicial y el turno para aperturar la caja.">
         <form action="{{ route('caja.store-apertura') }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
             @csrf
-            @if ($errors->any())
-                <x-ui.alert variant="error" :message="implode(' ', $errors->all())" />
-            @endif
 
             {{-- Cajero (solo lectura) --}}
             <div>

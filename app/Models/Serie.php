@@ -15,7 +15,7 @@ class Serie extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['tipocomp', 'serie', 'correlativo'];
+    protected $fillable = ['idserie', 'tipocomp', 'serie', 'correlativo'];
 
     protected $casts = [
         'correlativo' => 'integer',

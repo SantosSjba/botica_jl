@@ -10,11 +10,8 @@
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    @if (session('success'))
-        <x-ui.alert variant="success" :message="session('success')" />
-    @endif
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
+    @if ($errors->any())
+        <div class="flash-toast" data-type="error" data-msg="{{ e(implode(' ', $errors->all())) }}" style="display:none" aria-hidden="true"></div>
     @endif
 
     <x-common.component-card
@@ -23,9 +20,6 @@
     >
         <form action="{{ route('configuracion.update') }}" method="post" enctype="multipart/form-data" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
             @csrf
-            @if ($errors->any())
-                <x-ui.alert variant="error" :message="implode(' ', $errors->all())" />
-            @endif
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>

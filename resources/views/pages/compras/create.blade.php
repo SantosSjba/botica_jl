@@ -11,13 +11,6 @@
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    @if (session('success'))
-        <x-ui.alert variant="success" :message="session('success')" />
-    @endif
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
-    @endif
-
     <x-common.component-card title="Registrar compra" desc="Busque productos, agregue al carrito y complete los datos del documento. Use Nuevo para vaciar el carrito.">
         <form action="{{ route('compras.store') }}" method="post" x-data="{ loading: false }" @submit="loading = true" id="form-compras">
             @csrf
@@ -150,6 +143,7 @@
                     body: JSON.stringify({ idproducto: id })
                 }).then(function(r) { return r.json(); }).then(function(data) {
                     if (data.ok) { tablaContainer.innerHTML = data.table; totalesContainer.innerHTML = data.totales; bindCarritoEvents(); }
+                    else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'error');
                 });
             });
         });
@@ -165,6 +159,7 @@
                     body: JSON.stringify({ idproducto: id, cantidad: cant })
                 }).then(function(r) { return r.json(); }).then(function(data) {
                     if (data.ok) { tablaContainer.innerHTML = data.table; totalesContainer.innerHTML = data.totales; bindCarritoEvents(); }
+                    else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'error');
                 });
             });
         });
@@ -179,6 +174,7 @@
                     body: JSON.stringify({ idproducto: id, precio: precio })
                 }).then(function(r) { return r.json(); }).then(function(data) {
                     if (data.ok) { tablaContainer.innerHTML = data.table; totalesContainer.innerHTML = data.totales; bindCarritoEvents(); }
+                    else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'error');
                 });
             });
         });
@@ -243,7 +239,8 @@
                 idProductoHidden.value = '';
                 productoSeleccionado = null;
             } else {
-                if (data.message) alert(data.message);
+                if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'error');
+                else if (data.message) alert(data.message);
             }
             btnAgregar.disabled = true;
         });

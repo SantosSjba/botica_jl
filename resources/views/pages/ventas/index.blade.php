@@ -1,34 +1,27 @@
 @extends('layouts.app')
 
 @php
-    $inputClass = 'dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30';
-    $inputReadonlyClass = 'shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white/90 dark:placeholder:text-white/30';
-    $selectClass = 'dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90';
-    $labelClass = 'mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400';
+    $inputClass = 'dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30';
+    $inputReadonlyClass = 'shadow-theme-xs h-9 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white/90 dark:placeholder:text-white/30';
+    $selectClass = 'dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-3 py-2 pr-9 text-sm text-gray-800 focus:ring-2 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90';
+    $labelClass = 'mb-1 block text-xs font-medium text-gray-700 dark:text-gray-400';
 @endphp
 
 @section('content')
-<div class="min-w-0 space-y-6" x-data="ventasForm()">
+<div class="min-w-0 space-y-4" x-data="ventasForm()">
     <x-common.page-breadcrumb :pageTitle="$title" />
-
-    @if (session('success'))
-        <x-ui.alert variant="success" :message="session('success')" />
-    @endif
-    @if (session('error'))
-        <x-ui.alert variant="error" :message="session('error')" />
-    @endif
 
     <div id="ventas-msn" class="hidden"></div>
 
     {{-- 1. Producto (búsqueda + código barras) --}}
-    <x-common.component-card title="Producto" desc="Código de barras o busque en el listado.">
+    <x-common.component-card title="Producto" desc="Código de barras o busque en el listado." :compact="true">
         <form id="ventas-barcode-form" class="flex gap-2" @submit.prevent="submitBarcode()">
             <div class="flex-1">
                 <label for="ventas-cod" class="sr-only">Código de barras</label>
                 <input type="text" id="ventas-cod" name="cod" placeholder="Código de barras" autofocus
-                    class="{{ $inputClass }}" x-ref="ventasCodInput" />
+                    class="{{ $inputClass }} h-9" x-ref="ventasCodInput" />
             </div>
-            <button type="submit" class="inline-flex h-11 min-w-[7rem] items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-70" :disabled="barcodeLoading">
+            <button type="submit" class="inline-flex h-9 min-w-[6rem] items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-70" :disabled="barcodeLoading">
                 <span x-show="!barcodeLoading" class="inline-flex items-center gap-2">
                     <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
                     Código
@@ -38,16 +31,16 @@
                     Agregando...
                 </span>
             </button>
-            <button type="button" @click="abrirModalProductos()" class="inline-flex h-11 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <button type="button" @click="abrirModalProductos()" class="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 Buscar
             </button>
         </form>
     </x-common.component-card>
 
     {{-- 2. Carrito --}}
-    <x-common.component-card title="Carrito" desc="Detalle de productos. Edite cantidad o precio en la tabla si lo necesita.">
-        <div id="ventas-carrito-wrapper" class="relative min-h-[120px]">
+    <x-common.component-card title="Carrito" desc="Detalle de productos." :compact="true">
+        <div id="ventas-carrito-wrapper" class="relative min-h-[80px]">
             <div id="ventas-carrito-loading" class="absolute inset-0 z-10 hidden items-center justify-center rounded-b-2xl bg-white/80 dark:bg-gray-900/80" aria-hidden="true">
                 <div class="flex flex-col items-center gap-2">
                     <svg class="size-10 animate-spin text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -61,11 +54,11 @@
         </div>
     </x-common.component-card>
 
-    {{-- 3. Comprobante y cliente (ancho completo, debajo del carrito) --}}
-    <form id="frmVenta" action="{{ route('ventas.store') }}" method="post" class="space-y-4" @submit="loading = true; registrarVenta($event)">
+    {{-- 3. Comprobante y cliente --}}
+    <form id="frmVenta" action="{{ route('ventas.store') }}" method="post" class="space-y-3" @submit="loading = true; registrarVenta($event)">
         @csrf
-        <x-common.component-card title="Comprobante y cliente" desc="Complete tipo de comprobante, forma de pago y datos del cliente.">
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <x-common.component-card title="Comprobante y cliente" desc="Comprobante, documento y pagos." :compact="true">
+            <div class="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 <div>
                     <label for="tico" class="{{ $labelClass }}">Tipo comprobante <span class="text-red-500">*</span></label>
                     <x-form.select-wrapper id="tico" name="tico" required>
@@ -103,34 +96,34 @@
                     <label for="numero" class="{{ $labelClass }}">Número documento</label>
                     <input type="text" id="numero" name="numero" placeholder="Número de documento" maxlength="15" class="{{ $inputClass }}" />
                 </div>
-                <div class="sm:col-span-2">
+                <div class="sm:col-span-2 xl:col-span-3">
                     <label for="rz" class="{{ $labelClass }}">Cliente / Razón social <span class="text-red-500">*</span></label>
-                    <textarea id="rz" name="rz" rows="2" required class="{{ $inputClass }}">público en general</textarea>
+                    <textarea id="rz" name="rz" rows="1" required class="{{ $inputClass }} resize-none">público en general</textarea>
                 </div>
-                <div class="sm:col-span-2">
+                <div class="sm:col-span-2 xl:col-span-3">
                     <label for="dir" class="{{ $labelClass }}">Dirección</label>
-                    <textarea id="dir" name="dir" rows="2" class="{{ $inputClass }}" placeholder="Dirección del cliente"></textarea>
+                    <textarea id="dir" name="dir" rows="1" class="{{ $inputClass }} resize-none" placeholder="Dirección"></textarea>
                 </div>
-                <div class="sm:col-span-2 lg:col-span-4">
+                <div class="col-span-full">
                     <label class="{{ $labelClass }}">Pagos <span class="text-red-500">*</span></label>
-                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Agregue uno o más pagos (ej. parte YAPE y parte efectivo). La suma debe coincidir con el total a pagar.</p>
-                    <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
-                        <table class="w-full min-w-[640px]" id="ventas-pagos-tabla">
+                    <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">Suma de pagos = total a pagar.</p>
+                    <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                        <table class="w-full min-w-[640px] text-sm" id="ventas-pagos-tabla">
                             <thead>
                                 <tr class="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Tipo</th>
-                                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-28">Monto (S/)</th>
-                                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-28">Recibo (efectivo)</th>
-                                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-24">Vuelto</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Nº operación</th>
-                                    <th class="w-12"></th>
+                                    <th class="px-2 py-1.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Tipo</th>
+                                    <th class="px-2 py-1.5 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-24">Monto</th>
+                                    <th class="px-2 py-1.5 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-24">Recibo</th>
+                                    <th class="px-2 py-1.5 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-20">Vuelto</th>
+                                    <th class="px-2 py-1.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Nº op.</th>
+                                    <th class="w-10"></th>
                                 </tr>
                             </thead>
                             <tbody id="ventas-pagos-tbody">
                                 <tr class="ventas-pago-row border-b border-gray-100 dark:border-gray-800" data-index="0">
-                                    <td class="px-3 py-2">
-                                        <div class="ventas-pago-tipo-wrap max-w-[200px]">
-                                            <x-form.select-wrapper name="pagos[0][tipo_pago]" id="pago-tipo-0" class="ventas-pago-tipo py-2 h-10 w-full" data-index="0">
+                                    <td class="px-2 py-1.5">
+                                        <div class="ventas-pago-tipo-wrap max-w-[180px]">
+                                            <x-form.select-wrapper name="pagos[0][tipo_pago]" id="pago-tipo-0" class="ventas-pago-tipo py-1.5 h-9 w-full text-sm" data-index="0">
                                                 <option value="EFECTIVO">EFECTIVO</option>
                                                 <option value="YAPE">YAPE</option>
                                                 <option value="PLIN">PLIN</option>
@@ -141,22 +134,22 @@
                                             </x-form.select-wrapper>
                                         </div>
                                     </td>
-                                    <td class="px-3 py-2"><input type="number" name="pagos[0][monto]" min="0" step="0.01" placeholder="0.00" class="ventas-pago-monto {{ $inputClass }} py-2 h-10 text-right w-full" data-index="0" /></td>
-                                    <td class="px-3 py-2 ventas-recibo-cell"><input type="number" name="pagos[0][recibo]" min="0" step="0.01" placeholder="—" class="ventas-pago-recibo {{ $inputClass }} py-2 h-10 text-right w-full" data-index="0" /></td>
-                                    <td class="px-3 py-2 ventas-vuelto-cell"><input type="text" readonly class="ventas-pago-vuelto {{ $inputReadonlyClass }} py-2 h-10 text-right w-full" value="0.00" /></td>
-                                    <td class="px-3 py-2 ventas-numope-cell"><input type="text" name="pagos[0][numope]" placeholder="Opcional" class="ventas-pago-numope {{ $inputClass }} py-2 h-10 w-full" data-index="0" /></td>
-                                    <td class="px-3 py-2"><button type="button" class="ventas-pago-quitar rounded-lg border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50" data-index="0" title="Quitar pago">Quitar</button></td>
+                                    <td class="px-2 py-1.5"><input type="number" name="pagos[0][monto]" min="0" step="0.01" placeholder="0" class="ventas-pago-monto {{ $inputClass }} h-9 text-right w-full" data-index="0" /></td>
+                                    <td class="px-2 py-1.5 ventas-recibo-cell"><input type="number" name="pagos[0][recibo]" min="0" step="0.01" placeholder="—" class="ventas-pago-recibo {{ $inputClass }} h-9 text-right w-full" data-index="0" /></td>
+                                    <td class="px-2 py-1.5 ventas-vuelto-cell"><input type="text" readonly class="ventas-pago-vuelto {{ $inputReadonlyClass }} h-9 text-right w-full text-sm" value="0.00" /></td>
+                                    <td class="px-2 py-1.5 ventas-numope-cell"><input type="text" name="pagos[0][numope]" placeholder="—" class="ventas-pago-numope {{ $inputClass }} h-9 w-full" data-index="0" /></td>
+                                    <td class="px-2 py-1.5"><button type="button" class="ventas-pago-quitar rounded border border-red-200 bg-red-50 px-1.5 py-1 text-xs font-medium text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400" data-index="0" title="Quitar">✕</button></td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="flex flex-wrap items-center gap-3 border-t border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/50">
-                            <button type="button" id="ventas-pago-agregar" class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <div class="flex flex-wrap items-center gap-2 border-t border-gray-200 bg-gray-50 px-2 py-1.5 dark:border-gray-700 dark:bg-gray-800/50">
+                            <button type="button" id="ventas-pago-agregar" class="inline-flex h-8 items-center gap-1 rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                                 Agregar pago
                             </button>
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Total a pagar: <strong id="ventas-total-pagar">{{ $simboloMoneda ?? 'S/' }} {{ number_format($totales['total'] ?? 0, 2) }}</strong></span>
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Suma pagos: <strong id="ventas-suma-pagos">0.00</strong></span>
-                            <span id="ventas-pagos-diferencia" class="text-sm font-medium text-amber-600 dark:text-amber-400">Falta completar</span>
+                            <span class="text-xs text-gray-600 dark:text-gray-400">Total: <strong id="ventas-total-pagar">{{ $simboloMoneda ?? 'S/' }} {{ number_format($totales['total'] ?? 0, 2) }}</strong></span>
+                            <span class="text-xs text-gray-600 dark:text-gray-400">Suma: <strong id="ventas-suma-pagos">0.00</strong></span>
+                            <span id="ventas-pagos-diferencia" class="text-xs font-medium text-amber-600 dark:text-amber-400">Falta</span>
                         </div>
                     </div>
                     <input type="hidden" id="recibo" name="recibo" value="" />
@@ -166,10 +159,10 @@
         </x-common.component-card>
     </form>
 
-    {{-- Resumen de venta a ancho completo --}}
-    <x-common.component-card title="Resumen de venta" desc="Totales según los productos en el carrito.">
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div id="ventas-total-container" class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+    {{-- Resumen de venta --}}
+    <x-common.component-card title="Resumen" :compact="true">
+        <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div id="ventas-total-container" class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
                 @include('pages.ventas._total', ['totales' => $totales ?? ['total' => 0, 'simbolo_moneda' => $simboloMoneda ?? 'S/']])
             </div>
             <div id="ventas-igv-container" class="sm:col-span-2 lg:col-span-3">
@@ -178,13 +171,13 @@
         </div>
     </x-common.component-card>
 
-    {{-- Botones al final del formulario --}}
-    <div class="flex flex-wrap justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
-        <a href="{{ route('ventas.limpiar') }}" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+    {{-- Botones --}}
+    <div class="flex flex-wrap justify-end gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
+        <a href="{{ route('ventas.limpiar') }}" class="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+            <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             Nuevo
         </a>
-        <button type="submit" form="frmVenta" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-50" :disabled="loading">
+        <button type="submit" form="frmVenta" class="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-50" :disabled="loading">
             <span x-show="!loading" class="inline-flex items-center gap-2">
                 <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                 Registrar venta
@@ -305,7 +298,8 @@ document.addEventListener('alpine:init', function() {
                         if (input) input.value = '';
                         await this.refreshCarrito('Producto agregado');
                     }
-                    if (data.message) alert(data.message);
+                    if (data.message && typeof window.showToast === 'function') window.showToast(data.message, data.success ? 'success' : 'warning');
+                    else if (data.message) alert(data.message);
                 } finally {
                     this.barcodeLoading = false;
                 }
@@ -316,18 +310,26 @@ document.addEventListener('alpine:init', function() {
                     btn.onclick = function() { self.quitarItem(parseInt(btn.dataset.id, 10)); };
                 });
                 document.querySelectorAll('.ventas-cantidad-input').forEach(function(input) {
-                    input.onchange = input.onblur = function() {
+                    var debounceTimer;
+                    function aplicarCantidad() {
                         const id = parseInt(input.dataset.id, 10);
                         const text = Math.max(1, parseInt(String(input.value).replace(/\D/g, ''), 10) || 1);
                         input.value = text;
-                        if (text >= 1) self.actualizarCantidad(id, text);
-                    };
+                        if (id >= 1 && text >= 1) self.actualizarCantidad(id, text);
+                    }
+                    function onCantidadInput() {
+                        clearTimeout(debounceTimer);
+                        debounceTimer = setTimeout(aplicarCantidad, 500);
+                    }
+                    input.onchange = input.onblur = aplicarCantidad;
+                    input.oninput = onCantidadInput;
                 });
                 document.querySelectorAll('.editable-precio').forEach(function(el) {
                     el.onblur = function() {
                         const id = parseInt(el.dataset.id, 10);
-                        const text = parseFloat(String(el.innerText).replace(',', '.')) || 0;
-                        if (text >= 0) self.actualizarPrecio(id, text);
+                        const raw = String(el.innerText || '').trim().replace(',', '.');
+                        const text = parseFloat(raw) || 0;
+                        if (id >= 1 && text >= 0) self.actualizarPrecio(id, text);
                     };
                 });
             },
@@ -340,6 +342,7 @@ document.addEventListener('alpine:init', function() {
                 const res = await fetch(this.routes.actualizarCantidad, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.token, 'Accept': 'application/json' }, body: JSON.stringify({ id, text }) });
                 const data = await res.json();
                 if (data.success) await this.refreshCarrito('Actualizado');
+                else if (data.message && typeof window.showToast === 'function') window.showToast(data.message, 'warning');
                 else if (data.message) alert(data.message);
             },
             async actualizarPrecio(id, text) {
@@ -414,7 +417,8 @@ document.addEventListener('alpine:init', function() {
                 const totalVenta = parseFloat(totalEl && totalEl.value ? totalEl.value.replace(',', '.') : 0) || 0;
                 const suma = typeof window.ventasSumaPagos === 'function' ? window.ventasSumaPagos() : 0;
                 if (Math.abs(suma - totalVenta) > 0.02) {
-                    alert('La suma de los pagos (' + suma.toFixed(2) + ') debe coincidir con el total a pagar (' + totalVenta.toFixed(2) + ').');
+                    if (typeof window.showToast === 'function') window.showToast('La suma de los pagos (' + suma.toFixed(2) + ') debe coincidir con el total a pagar (' + totalVenta.toFixed(2) + ').', 'error');
+                    else alert('La suma de los pagos (' + suma.toFixed(2) + ') debe coincidir con el total a pagar (' + totalVenta.toFixed(2) + ').');
                     this.loading = false;
                     return;
                 }
@@ -424,9 +428,21 @@ document.addEventListener('alpine:init', function() {
                 const rz = (fd.get('rz') || '').toString().trim().toLowerCase();
                 const dir = (fd.get('dir') || '').toString().trim();
                 if (td === '4') {
-                    if (numero.length !== 11 || !/^\d+$/.test(numero)) { alert('El RUC debe tener exactamente 11 dígitos numéricos.'); this.loading = false; return; }
-                    if (rz === 'público en general' || rz === 'publico en general') { alert('No se puede registrar cliente "Público en general" para RUC.'); this.loading = false; return; }
-                    if (dir === '') { alert('La dirección no puede estar vacía para RUC.'); this.loading = false; return; }
+                    if (numero.length !== 11 || !/^\d+$/.test(numero)) {
+                        if (typeof window.showToast === 'function') window.showToast('El RUC debe tener exactamente 11 dígitos numéricos.', 'error');
+                        else alert('El RUC debe tener exactamente 11 dígitos numéricos.');
+                        this.loading = false; return;
+                    }
+                    if (rz === 'público en general' || rz === 'publico en general') {
+                        if (typeof window.showToast === 'function') window.showToast('No se puede registrar cliente "Público en general" para RUC.', 'error');
+                        else alert('No se puede registrar cliente "Público en general" para RUC.');
+                        this.loading = false; return;
+                    }
+                    if (dir === '') {
+                        if (typeof window.showToast === 'function') window.showToast('La dirección no puede estar vacía para RUC.', 'error');
+                        else alert('La dirección no puede estar vacía para RUC.');
+                        this.loading = false; return;
+                    }
                 }
                 if (td === '1') { form.querySelector('#td').value = '2'; fd.set('td', '2'); }
                 if (numero === '') fd.set('numero', '00000000');
@@ -438,10 +454,13 @@ document.addEventListener('alpine:init', function() {
                 if (data.success) {
                     await this.refreshCarrito();
                     if (typeof window.ventasResetPagos === 'function') window.ventasResetPagos();
-                    if (data.idventa) window.open(this.baseUrl + '/reportes/ticket?idventa=' + data.idventa + '&formato=ticket', '_blank');
-                    alert(data.message || 'Venta registrada.');
+                    if (data.idventa) {
+                        window.open(this.baseUrl + '/reportes/ticket?idventa=' + data.idventa + '&formato=ticket', '_blank', 'noopener');
+                        if (typeof window.showToast === 'function') window.showToast(data.message || 'Venta registrada. Se abrió el ticket para imprimir.', 'success');
+                    } else if (typeof window.showToast === 'function') window.showToast(data.message || 'Venta registrada.', 'success');
                 } else {
-                    alert(data.message || 'Error al registrar la venta.');
+                    if (typeof window.showToast === 'function') window.showToast(data.message || 'Error al registrar la venta.', 'error');
+                    else alert(data.message || 'Error al registrar la venta.');
                 }
             },
         };
@@ -539,12 +558,12 @@ document.addEventListener('alpine:init', function() {
         var tr = document.createElement('tr');
         tr.className = 'ventas-pago-row border-b border-gray-100 dark:border-gray-800';
         tr.setAttribute('data-index', idx);
-        tr.innerHTML = '<td class="px-3 py-2"><div class="relative z-20 bg-transparent max-w-[200px]"><select name="pagos[' + idx + '][tipo_pago]" class="ventas-pago-tipo {{ $selectClass }} py-2 h-10 w-full pr-11" data-index="' + idx + '">' + ventasPagosTipoOptions() + '</select><span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400"><svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span></div></td>' +
-            '<td class="px-3 py-2"><input type="number" name="pagos[' + idx + '][monto]" min="0" step="0.01" placeholder="0.00" class="ventas-pago-monto {{ $inputClass }} py-2 h-10 text-right w-full" data-index="' + idx + '" /></td>' +
-            '<td class="px-3 py-2 ventas-recibo-cell"><input type="number" name="pagos[' + idx + '][recibo]" min="0" step="0.01" placeholder="—" class="ventas-pago-recibo {{ $inputClass }} py-2 h-10 text-right w-full" data-index="' + idx + '" /></td>' +
-            '<td class="px-3 py-2 ventas-vuelto-cell"><input type="text" readonly class="ventas-pago-vuelto {{ $inputReadonlyClass }} py-2 h-10 text-right w-full" value="0.00" /></td>' +
-            '<td class="px-3 py-2 ventas-numope-cell" style="display:none"><input type="text" name="pagos[' + idx + '][numope]" placeholder="Opcional" class="ventas-pago-numope {{ $inputClass }} py-2 h-10 w-full" data-index="' + idx + '" /></td>' +
-            '<td class="px-3 py-2"><button type="button" class="ventas-pago-quitar rounded-lg border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50" data-index="' + idx + '" title="Quitar pago">Quitar</button></td>';
+        tr.innerHTML = '<td class="px-2 py-1.5"><div class="relative z-20 bg-transparent max-w-[180px]"><select name="pagos[' + idx + '][tipo_pago]" class="ventas-pago-tipo {{ $selectClass }} h-9 w-full pr-9" data-index="' + idx + '">' + ventasPagosTipoOptions() + '</select><span class="pointer-events-none absolute top-1/2 right-3 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400"><svg class="stroke-current size-4" viewBox="0 0 20 20" fill="none"><path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span></div></td>' +
+            '<td class="px-2 py-1.5"><input type="number" name="pagos[' + idx + '][monto]" min="0" step="0.01" placeholder="0" class="ventas-pago-monto {{ $inputClass }} h-9 text-right w-full" data-index="' + idx + '" /></td>' +
+            '<td class="px-2 py-1.5 ventas-recibo-cell"><input type="number" name="pagos[' + idx + '][recibo]" min="0" step="0.01" placeholder="—" class="ventas-pago-recibo {{ $inputClass }} h-9 text-right w-full" data-index="' + idx + '" /></td>' +
+            '<td class="px-2 py-1.5 ventas-vuelto-cell"><input type="text" readonly class="ventas-pago-vuelto {{ $inputReadonlyClass }} h-9 text-right w-full text-sm" value="0.00" /></td>' +
+            '<td class="px-2 py-1.5 ventas-numope-cell" style="display:none"><input type="text" name="pagos[' + idx + '][numope]" placeholder="—" class="ventas-pago-numope {{ $inputClass }} h-9 w-full" data-index="' + idx + '" /></td>' +
+            '<td class="px-2 py-1.5"><button type="button" class="ventas-pago-quitar rounded border border-red-200 bg-red-50 px-1.5 py-1 text-xs font-medium text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400" data-index="' + idx + '" title="Quitar">✕</button></td>';
         tbody.appendChild(tr);
         ventasToggleRowCells(tr);
         tr.querySelector('.ventas-pago-tipo').addEventListener('change', function() { ventasToggleRowCells(tr); });
