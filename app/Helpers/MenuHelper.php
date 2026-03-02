@@ -70,7 +70,7 @@ class MenuHelper
                 'icon' => 'ecommerce',
                 'path' => '#',
                 'subItems' => [
-                    ['name' => 'Ventas', 'path' => $enDesarrollo],
+                    ['name' => 'Ventas', 'path' => route('ventas.index')],
                     ['name' => 'Consulta ventas', 'path' => $enDesarrollo],
                     ['name' => 'Consulta tickets', 'path' => $enDesarrollo],
                     ['name' => 'Nota de crédito', 'path' => $enDesarrollo],

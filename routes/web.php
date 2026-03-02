@@ -13,6 +13,7 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\Reportes\CuadreCajaController;
 use App\Http\Controllers\Reportes\RptComprasController;
 use App\Http\Controllers\Reportes\RptVentasController;
+use App\Http\Controllers\Ventas\VentaController;
 use App\Http\Controllers\Mantenimiento\CategoriaController as MantenimientoCategoriaController;
 use App\Http\Controllers\Mantenimiento\LoteController as MantenimientoLoteController;
 use App\Http\Controllers\Mantenimiento\PresentacionController as MantenimientoPresentacionController;
@@ -50,6 +51,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/caja/cierre', [CajaController::class, 'cierre'])->name('caja.cierre');
     Route::post('/caja/cierre', [CajaController::class, 'storeCierre'])->name('caja.store-cierre');
     Route::get('/caja/seguimiento', [CajaController::class, 'seguimiento'])->name('caja.seguimiento');
+
+    // Ventas (formulario de venta, carrito, guardar)
+    Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
+    Route::get('/ventas/limpiar', [VentaController::class, 'limpiar'])->name('ventas.limpiar');
+    Route::get('/ventas/carrito', [VentaController::class, 'carrito'])->name('ventas.carrito');
+    Route::get('/ventas/total', [VentaController::class, 'total'])->name('ventas.total');
+    Route::get('/ventas/igv', [VentaController::class, 'igv'])->name('ventas.igv');
+    Route::get('/ventas/productos', [VentaController::class, 'productos'])->name('ventas.productos');
+    Route::post('/ventas/carrito/barcode', [VentaController::class, 'addBarcode'])->name('ventas.carrito.barcode');
+    Route::post('/ventas/carrito/agregar', [VentaController::class, 'addProduct'])->name('ventas.carrito.agregar');
+    Route::post('/ventas/carrito/actualizar-cantidad', [VentaController::class, 'updateCantidad'])->name('ventas.carrito.actualizar-cantidad');
+    Route::post('/ventas/carrito/actualizar-precio', [VentaController::class, 'updatePrecio'])->name('ventas.carrito.actualizar-precio');
+    Route::post('/ventas/carrito/quitar', [VentaController::class, 'removeItem'])->name('ventas.carrito.quitar');
+    Route::post('/ventas/correlativo', [VentaController::class, 'correlativo'])->name('ventas.correlativo');
+    Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
 
     // Reportes: cuadre de caja (acceso según rol)
     Route::get('/reportes/cuadrecaja', [CuadreCajaController::class, 'show'])->name('reportes.cuadrecaja');
