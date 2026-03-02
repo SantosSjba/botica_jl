@@ -105,8 +105,8 @@ class MenuHelper
                 'icon' => 'ecommerce',
                 'path' => '#',
                 'subItems' => [
-                    ['name' => 'Compras', 'path' => $enDesarrollo],
-                    ['name' => 'Consulta compras', 'path' => $enDesarrollo],
+                    ['name' => 'Compras', 'path' => route('compras.create')],
+                    ['name' => 'Consulta compras', 'path' => route('compras.consulta.index')],
                 ],
             ];
             $items[] = [

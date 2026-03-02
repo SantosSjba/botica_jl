@@ -99,7 +99,8 @@
                             pathNorm = (path || '').replace(/^\//, '');
                         }
                         const current = this.currentPath;
-                        return current === pathNorm || (pathNorm && current.startsWith(pathNorm + '/'));
+                        // Solo coincidencia exacta para que no se pinten dos opciones (ej. Compras y Consulta compras)
+                        return current === pathNorm;
                     }
                 };
             });

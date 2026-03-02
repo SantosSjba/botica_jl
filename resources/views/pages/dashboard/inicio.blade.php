@@ -29,12 +29,12 @@
             <p class="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">Caja</p>
             <p class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">Apertura: {{ $simboloMoneda ?? 'S/' }} {{ number_format($montoCaja, 2) }}</p>
         </a>
-        <a href="{{ route('en-desarrollo') }}" class="rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-brand-200 hover:shadow-sm dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-brand-800 md:p-6">
+        <a href="{{ route('compras.consulta.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-brand-200 hover:shadow-sm dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-brand-800 md:p-6">
             <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30">
                 <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
             </div>
             <p class="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">Compras</p>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Ir a compras</p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Consulta compras</p>
         </a>
         <a href="{{ route('mantenimiento.clientes.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-brand-200 hover:shadow-sm dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-brand-800 md:p-6">
             <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30">

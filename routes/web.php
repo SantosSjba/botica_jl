@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Caja\CajaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\Compras\ComprasController;
+use App\Http\Controllers\Compras\ConsultaComprasController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Reportes\CuadreCajaController;
@@ -47,6 +49,22 @@ Route::middleware('auth')->group(function () {
 
     // Reportes: cuadre de caja (acceso según rol)
     Route::get('/reportes/cuadrecaja', [CuadreCajaController::class, 'show'])->name('reportes.cuadrecaja');
+
+    // Compras (solo ADMINISTRADOR)
+    Route::middleware('rol.administrador')->group(function () {
+        Route::get('/compras/consulta', [ConsultaComprasController::class, 'index'])->name('compras.consulta.index');
+        Route::get('/compras/consulta/{id}', [ConsultaComprasController::class, 'show'])->name('compras.consulta.show')->whereNumber('id');
+        Route::get('/compras', [ComprasController::class, 'create'])->name('compras.create');
+        Route::post('/compras', [ComprasController::class, 'store'])->name('compras.store');
+        Route::get('/compras/limpiar', [ComprasController::class, 'limpiar'])->name('compras.limpiar');
+        Route::get('/compras/buscar-productos', [ComprasController::class, 'buscarProductos'])->name('compras.buscar-productos');
+        Route::get('/compras/buscar-proveedores', [ComprasController::class, 'buscarProveedores'])->name('compras.buscar-proveedores');
+        Route::get('/compras/carrito/partials', [ComprasController::class, 'partialsCarrito'])->name('compras.carrito.partials');
+        Route::post('/compras/carrito/agregar', [ComprasController::class, 'agregarItem'])->name('compras.carrito.agregar');
+        Route::post('/compras/carrito/quitar', [ComprasController::class, 'quitarItem'])->name('compras.carrito.quitar');
+        Route::post('/compras/carrito/actualizar-cantidad', [ComprasController::class, 'actualizarCantidad'])->name('compras.carrito.actualizar-cantidad');
+        Route::post('/compras/carrito/actualizar-precio', [ComprasController::class, 'actualizarPrecio'])->name('compras.carrito.actualizar-precio');
+    });
 
     // Mantenimiento: Forma farmacéutica (Categoría)
     Route::resource('mantenimiento/categorias', MantenimientoCategoriaController::class)->names('mantenimiento.categorias');
