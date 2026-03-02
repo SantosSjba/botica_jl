@@ -407,7 +407,7 @@ document.addEventListener('alpine:init', function() {
                 if (data.success) {
                     await this.refreshCarrito();
                     document.getElementById('recibo').value = ''; document.getElementById('vuelto').value = '';
-                    if (data.idventa) window.open(this.baseUrl + '/reportes/ticket?idventa=' + data.idventa, '_blank');
+                    if (data.idventa) window.open(this.baseUrl + '/reportes/ticket?idventa=' + data.idventa + '&formato=ticket', '_blank');
                     alert(data.message || 'Venta registrada.');
                 } else {
                     alert(data.message || 'Error al registrar la venta.');

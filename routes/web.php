@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\Reportes\CuadreCajaController;
+use App\Http\Controllers\Reportes\ReporteTicketController;
 use App\Http\Controllers\Reportes\RptComprasController;
 use App\Http\Controllers\Reportes\RptVentasController;
 use App\Http\Controllers\Ventas\ConsultaVentasController;
@@ -83,6 +84,9 @@ Route::middleware('auth')->group(function () {
 
     // Reportes: cuadre de caja (acceso según rol)
     Route::get('/reportes/cuadrecaja', [CuadreCajaController::class, 'show'])->name('reportes.cuadrecaja');
+
+    // Reportes: comprobante de venta (ticket / A4 / A5)
+    Route::get('/reportes/ticket', [ReporteTicketController::class, 'index'])->name('reportes.ticket');
 
     // Reportes: ventas y compras (solo ADMINISTRADOR)
     Route::middleware('rol.administrador')->group(function () {

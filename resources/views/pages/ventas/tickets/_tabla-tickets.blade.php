@@ -41,10 +41,14 @@
                                 @if(!$anulado)
                                     <button type="button" class="btn-anular-ticket inline-flex items-center rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-theme-xs font-medium text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50" data-id="{{ $v->idventa }}" title="Anular y devolver stock">Anular</button>
                                 @endif
-                                <a href="{{ $reporteTicketUrl }}?idventa={{ $v->idventa }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-theme-xs font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                                    <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                                    Imprimir
-                                </a>
+                                <span class="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-2 py-1.5 shadow-theme-xs dark:border-gray-600 dark:bg-gray-800">
+                                    <svg class="size-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                    <a href="{{ $reporteTicketUrl }}?idventa={{ $v->idventa }}&formato=ticket" target="_blank" rel="noopener" class="text-theme-xs font-medium text-gray-700 hover:text-brand-600 dark:text-gray-300 dark:hover:text-brand-400">Ticket</a>
+                                    <span class="text-gray-300 dark:text-gray-600">|</span>
+                                    <a href="{{ $reporteTicketUrl }}?idventa={{ $v->idventa }}&formato=a4" target="_blank" rel="noopener" class="text-theme-xs font-medium text-gray-700 hover:text-brand-600 dark:text-gray-300 dark:hover:text-brand-400">A4</a>
+                                    <span class="text-gray-300 dark:text-gray-600">|</span>
+                                    <a href="{{ $reporteTicketUrl }}?idventa={{ $v->idventa }}&formato=a5" target="_blank" rel="noopener" class="text-theme-xs font-medium text-gray-700 hover:text-brand-600 dark:text-gray-300 dark:hover:text-brand-400">A5</a>
+                                </span>
                             </div>
                         </td>
                     </tr>

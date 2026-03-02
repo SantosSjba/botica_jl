@@ -10,10 +10,14 @@
         @if(!$imprimir)
             <div class="flex items-center gap-2 print:hidden">
                 <a href="{{ route('ventas.consulta.index') }}" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Volver al listado</a>
-                <a href="{{ url('/reportes/ticket?idventa=' . $venta->idventa) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                    <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                    Imprimir
-                </a>
+                <span class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-theme-xs dark:border-gray-600 dark:bg-gray-800">
+                    <svg class="size-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                    <a href="{{ url('/reportes/ticket?idventa=' . $venta->idventa . '&formato=ticket') }}" target="_blank" rel="noopener" class="text-sm font-medium text-gray-700 hover:text-brand-600 dark:text-gray-300 dark:hover:text-brand-400">Ticket</a>
+                    <span class="text-gray-300 dark:text-gray-600">|</span>
+                    <a href="{{ url('/reportes/ticket?idventa=' . $venta->idventa . '&formato=a4') }}" target="_blank" rel="noopener" class="text-sm font-medium text-gray-700 hover:text-brand-600 dark:text-gray-300 dark:hover:text-brand-400">A4</a>
+                    <span class="text-gray-300 dark:text-gray-600">|</span>
+                    <a href="{{ url('/reportes/ticket?idventa=' . $venta->idventa . '&formato=a5') }}" target="_blank" rel="noopener" class="text-sm font-medium text-gray-700 hover:text-brand-600 dark:text-gray-300 dark:hover:text-brand-400">A5</a>
+                </span>
             </div>
         @endif
     </div>
