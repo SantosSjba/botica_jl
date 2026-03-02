@@ -1,4 +1,5 @@
-{{-- Resumen Financiero --}}
+{{-- Resumen Financiero: solo ADMINISTRADOR --}}
+@if(\App\Helpers\PermisosHelper::isAdministrador())
 <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Resumen Financiero</h3>
     <form id="form-filtro-dashboard" method="get" action="{{ route('dashboard') }}" class="mt-4 flex flex-wrap items-end gap-3">
@@ -61,6 +62,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Productos por vencer (14 días) o vencidos --}}
 <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
