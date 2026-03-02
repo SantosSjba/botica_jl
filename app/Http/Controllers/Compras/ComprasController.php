@@ -257,8 +257,10 @@ class ComprasController extends Controller
             return response()->json(['ok' => false, 'message' => 'Ítem no encontrado.']);
         }
 
-        $importe = round($item->precio * $cantidad, 2);
-        $item->update(['cantidad' => $cantidad, 'importe' => $importe]);
+        $importe = round((float) $item->precio * $cantidad, 2);
+        Carritoc::where('session_id', $sessionId)
+            ->where('idproducto', $validated['idproducto'])
+            ->update(['cantidad' => $cantidad, 'importe' => $importe]);
 
         return $this->respuestaCarrito($request);
     }
@@ -283,8 +285,10 @@ class ComprasController extends Controller
             return response()->json(['ok' => false, 'message' => 'Ítem no encontrado.']);
         }
 
-        $importe = round($precio * $item->cantidad, 2);
-        $item->update(['precio' => $precio, 'importe' => $importe]);
+        $importe = round($precio * (int) $item->cantidad, 2);
+        Carritoc::where('session_id', $sessionId)
+            ->where('idproducto', $validated['idproducto'])
+            ->update(['precio' => $precio, 'importe' => $importe]);
 
         return $this->respuestaCarrito($request);
     }
