@@ -6,12 +6,24 @@ El build de Vite en este proyecto **no** genera una carpeta `dist` en la raíz. 
 
 ## 1. Preparar el build en tu PC (antes de subir)
 
-En la raíz del proyecto ejecuta:
+1. Abre terminal en la **raíz del proyecto** (donde están `package.json`, `vite.config.js`, la carpeta `app/`, etc.).
+2. Ejecuta:
 
 ```bash
 npm install
 npm run build
 ```
+
+**En PowerShell (Windows)** si `&&` da error, usa punto y coma:
+```powershell
+npm install; npm run build
+```
+
+3. Revisa que exista la carpeta **`public/build/`** (no se llama `dist`). Dentro deberías ver:
+   - `manifest.json`
+   - carpeta `assets/` con archivos `.js` y `.css`
+
+Si el build falla: revisa que tengas Node.js instalado (`node -v` y `npm -v`) y que no haya errores en rojo en la salida.
 
 Eso crea (o actualiza) la carpeta **`public/build/`** con algo como:
 
