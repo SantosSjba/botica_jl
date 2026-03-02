@@ -8,6 +8,7 @@ use App\Http\Controllers\Compras\ComprasController;
 use App\Http\Controllers\Compras\ConsultaComprasController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\Reportes\CuadreCajaController;
 use App\Http\Controllers\Reportes\RptComprasController;
 use App\Http\Controllers\Reportes\RptVentasController;
@@ -58,6 +59,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/reportes/ventas-dia', [RptVentasController::class, 'ventasDia'])->name('reportes.ventas.dia');
         Route::get('/reportes/compras', [RptComprasController::class, 'comprasRango'])->name('reportes.compras.rango');
         Route::get('/reportes/compras-dia', [RptComprasController::class, 'comprasDia'])->name('reportes.compras.dia');
+        Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
+        Route::get('/backup/download', [BackupController::class, 'download'])->name('backup.download');
     });
 
     // Compras (solo ADMINISTRADOR)

@@ -120,7 +120,7 @@ class MenuHelper
                     ['name' => 'Rpt. Compras del día', 'path' => route('reportes.compras.dia')],
                 ],
             ];
-            $items[] = ['icon' => 'task', 'name' => 'Backup', 'path' => $enDesarrollo];
+            $items[] = ['icon' => 'task', 'name' => 'Backup', 'path' => route('backup.index')];
             $items[] = ['name' => 'Configuración', 'icon' => 'ui-elements', 'path' => $enDesarrollo];
             $items[] = ['name' => 'Acerca de', 'icon' => 'pages', 'path' => $enDesarrollo];
         }
