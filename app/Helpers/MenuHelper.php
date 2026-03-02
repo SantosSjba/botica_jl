@@ -121,7 +121,7 @@ class MenuHelper
                 ],
             ];
             $items[] = ['icon' => 'task', 'name' => 'Backup', 'path' => route('backup.index')];
-            $items[] = ['name' => 'Configuración', 'icon' => 'ui-elements', 'path' => $enDesarrollo];
+            $items[] = ['name' => 'Configuración', 'icon' => 'ui-elements', 'path' => route('configuracion.index')];
             $items[] = ['name' => 'Acerca de', 'icon' => 'pages', 'path' => $enDesarrollo];
         }
 
