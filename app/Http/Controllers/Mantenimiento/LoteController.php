@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLoteRequest;
 use App\Http\Requests\UpdateLoteRequest;
 use App\Models\Lote;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -69,11 +70,11 @@ class LoteController extends Controller
         ]);
     }
 
-    public function store(StoreLoteRequest $request): RedirectResponse
+    public function store(StoreLoteRequest $request): JsonResponse|RedirectResponse
     {
         $data = array_merge($request->validated(), ['idsucu_c' => 1]);
         Lote::create($data);
-        return redirect()->route('mantenimiento.lotes.index')->with('success', 'Registro grabado correctamente.');
+        return $this->successRedirect('Registro grabado correctamente.', route('mantenimiento.lotes.index'));
     }
 
     public function edit(Lote $lote): View
@@ -84,19 +85,19 @@ class LoteController extends Controller
         ]);
     }
 
-    public function update(UpdateLoteRequest $request, Lote $lote): RedirectResponse
+    public function update(UpdateLoteRequest $request, Lote $lote): JsonResponse|RedirectResponse
     {
         $lote->update($request->validated());
-        return redirect()->route('mantenimiento.lotes.index')->with('success', 'Registro actualizado correctamente.');
+        return $this->successRedirect('Registro actualizado correctamente.', route('mantenimiento.lotes.index'));
     }
 
-    public function destroy(Lote $lote): RedirectResponse
+    public function destroy(Lote $lote): JsonResponse|RedirectResponse
     {
+        $route = route('mantenimiento.lotes.index');
         if (!$lote->puedeEliminar()) {
-            return redirect()->route('mantenimiento.lotes.index')
-                ->with('error', $lote->mensajeNoEliminable());
+            return $this->errorRedirect($lote->mensajeNoEliminable(), $route);
         }
         $lote->delete();
-        return redirect()->route('mantenimiento.lotes.index')->with('success', 'Registro eliminado correctamente.');
+        return $this->successRedirect('Registro eliminado correctamente.', $route);
     }
 }

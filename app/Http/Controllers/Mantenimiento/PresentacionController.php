@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePresentacionRequest;
 use App\Http\Requests\UpdatePresentacionRequest;
 use App\Models\Presentacion;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -68,11 +69,11 @@ class PresentacionController extends Controller
         ]);
     }
 
-    public function store(StorePresentacionRequest $request): RedirectResponse
+    public function store(StorePresentacionRequest $request): JsonResponse|RedirectResponse
     {
         $data = array_merge($request->validated(), ['idsucu_c' => 1]);
         Presentacion::create($data);
-        return redirect()->route('mantenimiento.presentaciones.index')->with('success', 'Registro grabado correctamente.');
+        return $this->successRedirect('Registro grabado correctamente.', route('mantenimiento.presentaciones.index'));
     }
 
     public function edit(Presentacion $presentacion): View
@@ -83,19 +84,19 @@ class PresentacionController extends Controller
         ]);
     }
 
-    public function update(UpdatePresentacionRequest $request, Presentacion $presentacion): RedirectResponse
+    public function update(UpdatePresentacionRequest $request, Presentacion $presentacion): JsonResponse|RedirectResponse
     {
         $presentacion->update($request->validated());
-        return redirect()->route('mantenimiento.presentaciones.index')->with('success', 'Registro actualizado correctamente.');
+        return $this->successRedirect('Registro actualizado correctamente.', route('mantenimiento.presentaciones.index'));
     }
 
-    public function destroy(Presentacion $presentacion): RedirectResponse
+    public function destroy(Presentacion $presentacion): JsonResponse|RedirectResponse
     {
+        $route = route('mantenimiento.presentaciones.index');
         if (!$presentacion->puedeEliminar()) {
-            return redirect()->route('mantenimiento.presentaciones.index')
-                ->with('error', $presentacion->mensajeNoEliminable());
+            return $this->errorRedirect($presentacion->mensajeNoEliminable(), $route);
         }
         $presentacion->delete();
-        return redirect()->route('mantenimiento.presentaciones.index')->with('success', 'Registro eliminado correctamente.');
+        return $this->successRedirect('Registro eliminado correctamente.', $route);
     }
 }

@@ -7,7 +7,7 @@
         <div class="flash-toast" data-type="error" data-msg="{{ e(implode(' ', $errors->all())) }}" style="display:none" aria-hidden="true"></div>
     @endif
     <x-common.component-card title="Actualizar Presentación" desc="(*) Campos obligatorios">
-        <form action="{{ route('mantenimiento.presentaciones.update', $presentacion) }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+        <form action="{{ route('mantenimiento.presentaciones.update', $presentacion) }}" method="post" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true">
             @csrf
             @method('PUT')
             <div class="grid gap-4 sm:grid-cols-2">

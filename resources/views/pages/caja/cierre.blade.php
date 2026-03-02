@@ -11,7 +11,7 @@
     <x-common.page-breadcrumb :pageTitle="$title" />
 
     <x-common.component-card title="Cierre de caja" desc="Verifique los totales e ingrese el efectivo físico en caja para cerrar.">
-        <form action="{{ route('caja.store-cierre') }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6" id="form-cierre-caja">
+        <form action="{{ route('caja.store-cierre') }}" method="post" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true" id="form-cierre-caja">
             @csrf
             <input type="hidden" name="idcaja_a" value="{{ $cajaApertura->idcaja_a }}" />
             <input type="hidden" name="txtfec" value="{{ $fechaCaja }}" />

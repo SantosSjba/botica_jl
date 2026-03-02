@@ -8,7 +8,7 @@
     @endif
 
     <x-common.component-card title="Actualizar Cliente / Laboratorio" desc="(*) Campos obligatorios">
-        <form action="{{ route('mantenimiento.clientes.update', $cliente) }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+        <form action="{{ route('mantenimiento.clientes.update', $cliente) }}" method="post" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true">
             @csrf
             @method('PUT')
             <div class="grid gap-4 sm:grid-cols-2">

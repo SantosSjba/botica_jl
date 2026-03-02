@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
 use App\Models\Usuario;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -79,10 +80,10 @@ class UsuarioController extends Controller
         ]);
     }
 
-    public function store(StoreUsuarioRequest $request): RedirectResponse
+    public function store(StoreUsuarioRequest $request): JsonResponse|RedirectResponse
     {
         Usuario::create($request->validated());
-        return redirect()->route('mantenimiento.usuarios.index')->with('success', 'Registro grabado correctamente.');
+        return $this->successRedirect('Registro grabado correctamente.', route('mantenimiento.usuarios.index'));
     }
 
     public function edit(Usuario $usuario): View
@@ -93,23 +94,23 @@ class UsuarioController extends Controller
         ]);
     }
 
-    public function update(UpdateUsuarioRequest $request, Usuario $usuario): RedirectResponse
+    public function update(UpdateUsuarioRequest $request, Usuario $usuario): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
         if (empty($data['clave'])) {
             unset($data['clave']);
         }
         $usuario->update($data);
-        return redirect()->route('mantenimiento.usuarios.index')->with('success', 'Registro actualizado correctamente.');
+        return $this->successRedirect('Registro actualizado correctamente.', route('mantenimiento.usuarios.index'));
     }
 
-    public function destroy(Usuario $usuario): RedirectResponse
+    public function destroy(Usuario $usuario): JsonResponse|RedirectResponse
     {
+        $route = route('mantenimiento.usuarios.index');
         if (!$usuario->puedeEliminar()) {
-            return redirect()->route('mantenimiento.usuarios.index')
-                ->with('error', $usuario->mensajeNoEliminable());
+            return $this->errorRedirect($usuario->mensajeNoEliminable(), $route);
         }
         $usuario->delete();
-        return redirect()->route('mantenimiento.usuarios.index')->with('success', 'Registro eliminado correctamente.');
+        return $this->successRedirect('Registro eliminado correctamente.', $route);
     }
 }

@@ -12,7 +12,7 @@
     @endif
 
     <x-common.component-card title="Actualizar Usuario" desc="(*) Campos obligatorios. Deje la contraseña en blanco para no cambiarla.">
-        <form action="{{ route('mantenimiento.usuarios.update', $usuario) }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+        <form action="{{ route('mantenimiento.usuarios.update', $usuario) }}" method="post" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true">
             @csrf
             @method('PUT')
             <div class="grid gap-4 sm:grid-cols-2">

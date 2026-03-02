@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSintomaRequest;
 use App\Http\Requests\UpdateSintomaRequest;
 use App\Models\Sintoma;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -52,10 +53,10 @@ class SintomaController extends Controller
         return view('pages.mantenimiento.sintomas.create', ['title' => 'Nuevo Síntoma']);
     }
 
-    public function store(StoreSintomaRequest $request): RedirectResponse
+    public function store(StoreSintomaRequest $request): JsonResponse|RedirectResponse
     {
         Sintoma::create(array_merge($request->validated(), ['idsucu_c' => 1]));
-        return redirect()->route('mantenimiento.sintomas.index')->with('success', 'Registro grabado correctamente.');
+        return $this->successRedirect('Registro grabado correctamente.', route('mantenimiento.sintomas.index'));
     }
 
     public function edit(Sintoma $sintoma): View
@@ -63,18 +64,19 @@ class SintomaController extends Controller
         return view('pages.mantenimiento.sintomas.edit', ['title' => 'Editar Síntoma', 'sintoma' => $sintoma]);
     }
 
-    public function update(UpdateSintomaRequest $request, Sintoma $sintoma): RedirectResponse
+    public function update(UpdateSintomaRequest $request, Sintoma $sintoma): JsonResponse|RedirectResponse
     {
         $sintoma->update($request->validated());
-        return redirect()->route('mantenimiento.sintomas.index')->with('success', 'Registro actualizado correctamente.');
+        return $this->successRedirect('Registro actualizado correctamente.', route('mantenimiento.sintomas.index'));
     }
 
-    public function destroy(Sintoma $sintoma): RedirectResponse
+    public function destroy(Sintoma $sintoma): JsonResponse|RedirectResponse
     {
+        $route = route('mantenimiento.sintomas.index');
         if (!$sintoma->puedeEliminar()) {
-            return redirect()->route('mantenimiento.sintomas.index')->with('error', $sintoma->mensajeNoEliminable());
+            return $this->errorRedirect($sintoma->mensajeNoEliminable(), $route);
         }
         $sintoma->delete();
-        return redirect()->route('mantenimiento.sintomas.index')->with('success', 'Registro eliminado correctamente.');
+        return $this->successRedirect('Registro eliminado correctamente.', $route);
     }
 }

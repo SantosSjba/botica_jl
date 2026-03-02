@@ -6,6 +6,7 @@ use App\Helpers\PermisosHelper;
 use App\Http\Controllers\Controller;
 use App\Models\CajaApertura;
 use App\Models\CajaCierre;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,11 +23,10 @@ class CajaController extends Controller
      * Formulario de apertura de caja.
      * Solo accesible si no hay caja abierta.
      */
-    public function apertura(Request $request): View|RedirectResponse
+    public function apertura(Request $request): View|JsonResponse|RedirectResponse
     {
         if (PermisosHelper::tieneCajaAbierta()) {
-            return redirect()->route('caja.seguimiento')
-                ->with('error', __('No puede aperturar otra caja mientras tenga una caja abierta.'));
+            return $this->errorRedirect(__('No puede aperturar otra caja mientras tenga una caja abierta.'), route('caja.seguimiento'));
         }
 
         $user = $request->user();
@@ -46,11 +46,10 @@ class CajaController extends Controller
     /**
      * Registrar apertura de caja.
      */
-    public function storeApertura(Request $request): RedirectResponse
+    public function storeApertura(Request $request): JsonResponse|RedirectResponse
     {
         if (PermisosHelper::tieneCajaAbierta()) {
-            return redirect()->route('caja.seguimiento')
-                ->with('error', __('Ya tiene una caja abierta.'));
+            return $this->errorRedirect(__('Ya tiene una caja abierta.'), route('caja.seguimiento'));
         }
 
         $validated = $request->validate([
@@ -77,8 +76,7 @@ class CajaController extends Controller
             'estado' => 'Abierto',
         ]);
 
-        return redirect()->route('dashboard')
-            ->with('success', __('Caja aperturada correctamente.'));
+        return $this->successRedirect(__('Caja aperturada correctamente.'), route('dashboard'));
     }
 
     /**
@@ -105,15 +103,14 @@ class CajaController extends Controller
      * Formulario de cierre de caja.
      * Solo accesible si hay caja abierta.
      */
-    public function cierre(Request $request): View|RedirectResponse
+    public function cierre(Request $request): View|JsonResponse|RedirectResponse
     {
         $user = $request->user();
         $usuarioLogin = $user->usuario ?? '';
 
         $cajaAbierta = $this->getCajaAbierta($usuarioLogin);
         if (!$cajaAbierta || $cajaAbierta->estado !== 'Abierto') {
-            return redirect()->route('caja.apertura')
-                ->with('error', __('No tiene una caja abierta. Debe aperturar caja primero.'));
+            return $this->errorRedirect(__('No tiene una caja abierta. Debe aperturar caja primero.'), route('caja.apertura'));
         }
 
         $fechaCaja = $cajaAbierta->fecha->format('Y-m-d');
@@ -188,15 +185,14 @@ class CajaController extends Controller
     /**
      * Registrar cierre de caja.
      */
-    public function storeCierre(Request $request): RedirectResponse
+    public function storeCierre(Request $request): JsonResponse|RedirectResponse
     {
         $user = $request->user();
         $usuarioLogin = $user->usuario ?? '';
 
         $cajaAbierta = $this->getCajaAbierta($usuarioLogin);
         if (!$cajaAbierta || $cajaAbierta->estado !== 'Abierto') {
-            return redirect()->route('caja.apertura')
-                ->with('error', __('No tiene una caja abierta.'));
+            return $this->errorRedirect(__('No tiene una caja abierta.'), route('caja.apertura'));
         }
 
         $validated = $request->validate([
@@ -207,8 +203,7 @@ class CajaController extends Controller
         ]);
 
         if ((int) $cajaAbierta->idcaja_a !== (int) $validated['idcaja_a']) {
-            return redirect()->route('caja.cierre')
-                ->with('error', __('La caja a cerrar no coincide. Recargue la página.'));
+            return $this->errorRedirect(__('La caja a cerrar no coincide. Recargue la página.'), route('caja.cierre'));
         }
 
         $fechaCaja = $cajaAbierta->fecha->format('Y-m-d');
@@ -239,8 +234,7 @@ class CajaController extends Controller
 
         $cajaAbierta->update(['estado' => 'Cerrado']);
 
-        return redirect()->route('caja.seguimiento')
-            ->with('success', __('Caja cerrada correctamente.'));
+        return $this->successRedirect(__('Caja cerrada correctamente.'), route('caja.seguimiento'));
     }
 
     /**

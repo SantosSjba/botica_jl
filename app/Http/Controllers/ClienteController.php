@@ -6,6 +6,7 @@ use App\Http\Requests\StoreClienteRequest;
 use App\Http\Requests\UpdateClienteRequest;
 use App\Models\Cliente;
 use App\Models\TipoDocumento;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -87,10 +88,10 @@ class ClienteController extends Controller
         ]);
     }
 
-    public function store(StoreClienteRequest $request): RedirectResponse
+    public function store(StoreClienteRequest $request): JsonResponse|RedirectResponse
     {
         Cliente::create($request->validated());
-        return redirect()->route('mantenimiento.clientes.index')->with('success', 'Registro grabado correctamente.');
+        return $this->successRedirect('Registro grabado correctamente.', route('mantenimiento.clientes.index'));
     }
 
     public function edit(Cliente $cliente): View
@@ -103,19 +104,19 @@ class ClienteController extends Controller
         ]);
     }
 
-    public function update(UpdateClienteRequest $request, Cliente $cliente): RedirectResponse
+    public function update(UpdateClienteRequest $request, Cliente $cliente): JsonResponse|RedirectResponse
     {
         $cliente->update($request->validated());
-        return redirect()->route('mantenimiento.clientes.index')->with('success', 'Registro actualizado correctamente.');
+        return $this->successRedirect('Registro actualizado correctamente.', route('mantenimiento.clientes.index'));
     }
 
-    public function destroy(Cliente $cliente): RedirectResponse
+    public function destroy(Cliente $cliente): JsonResponse|RedirectResponse
     {
+        $route = route('mantenimiento.clientes.index');
         if (!$cliente->puedeEliminar()) {
-            return redirect()->route('mantenimiento.clientes.index')
-                ->with('error', $cliente->mensajeNoEliminable());
+            return $this->errorRedirect($cliente->mensajeNoEliminable(), $route);
         }
         $cliente->delete();
-        return redirect()->route('mantenimiento.clientes.index')->with('success', 'Registro eliminado correctamente.');
+        return $this->successRedirect('Registro eliminado correctamente.', $route);
     }
 }

@@ -215,10 +215,10 @@ class VentaController extends Controller
     }
 
     /** Limpiar carrito y redirigir al formulario. */
-    public function limpiar(): \Illuminate\Http\RedirectResponse
+    public function limpiar(): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $this->ventaService->limpiar();
-        return redirect()->route('ventas.index')->with('success', 'Carrito vaciado.');
+        return $this->successRedirect(__('Carrito vaciado.'), route('ventas.index'));
     }
 
     /** Listado de productos para el modal de búsqueda (partial). */

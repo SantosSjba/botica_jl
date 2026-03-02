@@ -15,7 +15,7 @@
     @endif
 
     <x-common.component-card title="Actualizar Producto" desc="(*) Campos obligatorios">
-        <form action="{{ route('mantenimiento.productos.update', $producto) }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+        <form action="{{ route('mantenimiento.productos.update', $producto) }}" method="post" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true">
             @csrf
             @method('PUT')
 

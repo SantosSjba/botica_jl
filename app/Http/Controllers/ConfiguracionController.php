@@ -99,8 +99,7 @@ class ConfiguracionController extends Controller
 
         $config->update($data);
 
-        return redirect()->route('configuracion.index')
-            ->with('success', __('Configuración guardada correctamente.'));
+        return $this->successRedirect(__('Configuración guardada correctamente.'), route('configuracion.index'));
     }
 
     /**

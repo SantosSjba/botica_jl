@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function () {
 
     // Ventas (formulario de venta, carrito, guardar)
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
-    Route::get('/ventas/limpiar', [VentaController::class, 'limpiar'])->name('ventas.limpiar');
+    Route::post('/ventas/limpiar', [VentaController::class, 'limpiar'])->name('ventas.limpiar');
     Route::get('/ventas/carrito', [VentaController::class, 'carrito'])->name('ventas.carrito');
     Route::get('/ventas/total', [VentaController::class, 'total'])->name('ventas.total');
     Route::get('/ventas/igv', [VentaController::class, 'igv'])->name('ventas.igv');
@@ -108,7 +108,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/compras/consulta/{id}', [ConsultaComprasController::class, 'show'])->name('compras.consulta.show')->whereNumber('id');
         Route::get('/compras', [ComprasController::class, 'create'])->name('compras.create');
         Route::post('/compras', [ComprasController::class, 'store'])->name('compras.store');
-        Route::get('/compras/limpiar', [ComprasController::class, 'limpiar'])->name('compras.limpiar');
+        Route::post('/compras/limpiar', [ComprasController::class, 'limpiar'])->name('compras.limpiar');
         Route::get('/compras/buscar-productos', [ComprasController::class, 'buscarProductos'])->name('compras.buscar-productos');
         Route::get('/compras/buscar-proveedores', [ComprasController::class, 'buscarProveedores'])->name('compras.buscar-proveedores');
         Route::get('/compras/carrito/partials', [ComprasController::class, 'partialsCarrito'])->name('compras.carrito.partials');

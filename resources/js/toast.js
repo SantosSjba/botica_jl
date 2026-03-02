@@ -64,12 +64,18 @@
 
     window.showToast = showToast;
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function showFlashToasts() {
         document.querySelectorAll('.flash-toast').forEach(function (flash) {
             const type = (flash.getAttribute('data-type') || 'info');
             const msg = flash.getAttribute('data-msg') || '';
             if (msg) showToast(msg, type);
             flash.remove();
         });
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', showFlashToasts);
+    } else {
+        showFlashToasts();
+    }
 })();

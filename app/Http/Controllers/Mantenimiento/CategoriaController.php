@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoriaRequest;
 use App\Http\Requests\UpdateCategoriaRequest;
 use App\Models\Categoria;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -76,10 +77,10 @@ class CategoriaController extends Controller
         ]);
     }
 
-    public function store(StoreCategoriaRequest $request): RedirectResponse
+    public function store(StoreCategoriaRequest $request): JsonResponse|RedirectResponse
     {
         Categoria::create($request->validated());
-        return redirect()->route('mantenimiento.categorias.index')->with('success', 'Registro grabado correctamente.');
+        return $this->successRedirect('Registro grabado correctamente.', route('mantenimiento.categorias.index'));
     }
 
     public function edit(Categoria $categoria): View
@@ -90,19 +91,19 @@ class CategoriaController extends Controller
         ]);
     }
 
-    public function update(UpdateCategoriaRequest $request, Categoria $categoria): RedirectResponse
+    public function update(UpdateCategoriaRequest $request, Categoria $categoria): JsonResponse|RedirectResponse
     {
         $categoria->update($request->validated());
-        return redirect()->route('mantenimiento.categorias.index')->with('success', 'Registro actualizado correctamente.');
+        return $this->successRedirect('Registro actualizado correctamente.', route('mantenimiento.categorias.index'));
     }
 
-    public function destroy(Categoria $categoria): RedirectResponse
+    public function destroy(Categoria $categoria): JsonResponse|RedirectResponse
     {
+        $route = route('mantenimiento.categorias.index');
         if (!$categoria->puedeEliminar()) {
-            return redirect()->route('mantenimiento.categorias.index')
-                ->with('error', $categoria->mensajeNoEliminable());
+            return $this->errorRedirect($categoria->mensajeNoEliminable(), $route);
         }
         $categoria->delete();
-        return redirect()->route('mantenimiento.categorias.index')->with('success', 'Registro eliminado correctamente.');
+        return $this->successRedirect('Registro eliminado correctamente.', $route);
     }
 }

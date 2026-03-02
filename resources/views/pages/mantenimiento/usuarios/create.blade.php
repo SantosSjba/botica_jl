@@ -12,7 +12,7 @@
     @endif
 
     <x-common.component-card title="Registrar Usuario" desc="(*) Campos obligatorios">
-        <form action="{{ route('mantenimiento.usuarios.store') }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+        <form action="{{ route('mantenimiento.usuarios.store') }}" method="post" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true">
             @csrf
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>

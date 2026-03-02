@@ -18,7 +18,7 @@
         title="Configuración"
         desc="Datos de la empresa, ubicación, IGV, moneda y credenciales SUNAT (Usuario SOL). El logo se muestra en el sistema."
     >
-        <form action="{{ route('configuracion.update') }}" method="post" enctype="multipart/form-data" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+        <form action="{{ route('configuracion.update') }}" method="post" enctype="multipart/form-data" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true">
             @csrf
 
             <div class="grid gap-4 sm:grid-cols-2">

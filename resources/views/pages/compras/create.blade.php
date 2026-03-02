@@ -12,7 +12,7 @@
     <x-common.page-breadcrumb :pageTitle="$title" />
 
     <x-common.component-card title="Registrar compra" desc="Busque productos, agregue al carrito y complete los datos del documento. Use Nuevo para vaciar el carrito.">
-        <form action="{{ route('compras.store') }}" method="post" x-data="{ loading: false }" @submit="loading = true" id="form-compras">
+        <form action="{{ route('compras.store') }}" method="post" class="form-ajax-submit" x-data="{ loading: false }" @submit="loading = true" id="form-compras">
             @csrf
 
             {{-- Datos del documento (al inicio) --}}
@@ -94,10 +94,13 @@
 
             {{-- Botones debajo del resumen --}}
             <div class="mb-6 flex flex-wrap gap-3">
-                <a href="{{ route('compras.limpiar') }}" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                    Nuevo (vaciar carrito)
-                </a>
+                <form action="{{ route('compras.limpiar') }}" method="post" class="form-ajax-submit inline">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                        <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        Nuevo (vaciar carrito)
+                    </button>
+                </form>
                 <x-ui.button-loader type="submit" label="Registrar compra" loading-text="Guardando..." class="!px-5 !py-3.5 bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 rounded-lg font-medium text-sm" />
             </div>
         </form>

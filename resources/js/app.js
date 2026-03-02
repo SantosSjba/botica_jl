@@ -1,5 +1,6 @@
 import './bootstrap';
 import './toast';
+import './form-ajax-submit';
 import Alpine from 'alpinejs';
 import ApexCharts from 'apexcharts';
 

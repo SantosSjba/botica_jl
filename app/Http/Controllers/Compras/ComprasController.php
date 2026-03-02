@@ -55,14 +55,13 @@ class ComprasController extends Controller
     /**
      * Guardar la compra (desde el carrito), actualizar stock y vaciar carrito.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $sessionId = $this->sessionId($request);
         $items = Carritoc::where('session_id', $sessionId)->get();
 
         if ($items->isEmpty()) {
-            return redirect()->route('compras.create')
-                ->with('error', __('Debe agregar al menos un producto al carrito para registrar la compra.'));
+            return $this->errorRedirect(__('Debe agregar al menos un producto al carrito para registrar la compra.'), route('compras.create'));
         }
 
         $validated = $request->validate([
@@ -120,10 +119,10 @@ class ComprasController extends Controller
     /**
      * Vaciar carrito y volver al formulario.
      */
-    public function limpiar(Request $request): RedirectResponse
+    public function limpiar(Request $request): JsonResponse|RedirectResponse
     {
         Carritoc::where('session_id', $this->sessionId($request))->delete();
-        return redirect()->route('compras.create')->with('success', __('Carrito vaciado.'));
+        return $this->successRedirect(__('Carrito vaciado.'), route('compras.create'));
     }
 
     /**

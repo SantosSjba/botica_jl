@@ -72,10 +72,10 @@
                                     <a href="{{ route('mantenimiento.productos.edit', $p) }}">
                                         <x-ui.button type="button" variant="outline" size="sm" class="!py-2 !px-3 text-theme-xs">Editar</x-ui.button>
                                     </a>
-                                    <form action="{{ route('mantenimiento.productos.destroy', $p) }}" method="post" class="inline-block" x-data="{ loading: false }" @submit="loading = true">
+                                    <form action="{{ route('mantenimiento.productos.destroy', $p) }}" method="post" class="form-ajax-submit inline-block" data-confirm="¿Realmente desea eliminar este producto?" x-data="{ loading: false }" @submit="loading = true">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-theme-xs font-medium text-red-600 hover:bg-red-100 dark:border-red-800 dark:bg-red-500/15 dark:text-red-500 dark:hover:bg-red-500/25 disabled:opacity-50" :disabled="loading" onclick="return confirm('¿Realmente desea eliminar este producto?');">
+                                        <button type="submit" class="inline-flex items-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-theme-xs font-medium text-red-600 hover:bg-red-100 dark:border-red-800 dark:bg-red-500/15 dark:text-red-500 dark:hover:bg-red-500/25 disabled:opacity-50" :disabled="loading">
                                             <span x-show="!loading">Eliminar</span>
                                             <span x-show="loading" x-cloak style="display: none;">Eliminando...</span>
                                         </button>

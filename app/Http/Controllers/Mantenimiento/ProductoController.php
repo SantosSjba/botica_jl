@@ -15,6 +15,7 @@ use App\Models\Configuracion;
 use App\Models\TipoAfectacion;
 use App\Exports\ProductosExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -172,7 +173,7 @@ class ProductoController extends Controller
         $this->actualizarFechaVencimientoLote($data['idlote'], $request->input('fecha_vencimiento'));
         unset($data['fecha_vencimiento']);
         Producto::create($data);
-        return redirect()->route('mantenimiento.productos.index')->with('success', 'Producto registrado correctamente.');
+        return $this->successRedirect('Producto registrado correctamente.', route('mantenimiento.productos.index'));
     }
 
     public function edit(Producto $producto): View
@@ -190,24 +191,24 @@ class ProductoController extends Controller
         ]);
     }
 
-    public function update(UpdateProductoRequest $request, Producto $producto): RedirectResponse
+    public function update(UpdateProductoRequest $request, Producto $producto): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
         $this->actualizarFechaVencimientoLote($data['idlote'], $request->input('fecha_vencimiento'));
         unset($data['fecha_vencimiento']);
         $producto->update($data);
-        return redirect()->route('mantenimiento.productos.index')->with('success', 'Producto actualizado correctamente.');
+        return $this->successRedirect('Producto actualizado correctamente.', route('mantenimiento.productos.index'));
     }
 
-    public function destroy(Producto $producto): RedirectResponse
+    public function destroy(Request $request, Producto $producto): JsonResponse|RedirectResponse
     {
+        $route = route('mantenimiento.productos.index');
         if (!$producto->puedeEliminar()) {
-            return redirect()->route('mantenimiento.productos.index')
-                ->with('error', $producto->mensajeNoEliminable());
+            return $this->errorRedirect($producto->mensajeNoEliminable(), $route);
         }
         DB::table('producto_similar')->where('idproducto', $producto->idproducto)->delete();
         $producto->delete();
-        return redirect()->route('mantenimiento.productos.index')->with('success', 'Producto eliminado correctamente.');
+        return $this->successRedirect('Producto eliminado correctamente.', $route);
     }
 
     private function getLotesOrdenados()

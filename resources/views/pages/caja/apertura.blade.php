@@ -16,7 +16,7 @@
     @endif
 
     <x-common.component-card title="Apertura de caja" desc="Registre el monto inicial y el turno para aperturar la caja.">
-        <form action="{{ route('caja.store-apertura') }}" method="post" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+        <form action="{{ route('caja.store-apertura') }}" method="post" class="form-ajax-submit space-y-6" x-data="{ loading: false }" @submit="loading = true">
             @csrf
 
             {{-- Cajero (solo lectura) --}}
