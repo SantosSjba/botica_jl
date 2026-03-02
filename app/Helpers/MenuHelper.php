@@ -114,10 +114,10 @@ class MenuHelper
                 'icon' => 'charts',
                 'path' => '#',
                 'subItems' => [
-                    ['name' => 'Rpt. Ventas', 'path' => $enDesarrollo],
-                    ['name' => 'Rpt. Ventas del día', 'path' => $enDesarrollo],
-                    ['name' => 'Rpt. Compras', 'path' => $enDesarrollo],
-                    ['name' => 'Rpt. Compras del día', 'path' => $enDesarrollo],
+                    ['name' => 'Rpt. Ventas', 'path' => route('reportes.ventas.rango')],
+                    ['name' => 'Rpt. Ventas del día', 'path' => route('reportes.ventas.dia')],
+                    ['name' => 'Rpt. Compras', 'path' => route('reportes.compras.rango')],
+                    ['name' => 'Rpt. Compras del día', 'path' => route('reportes.compras.dia')],
                 ],
             ];
             $items[] = ['icon' => 'task', 'name' => 'Backup', 'path' => $enDesarrollo];

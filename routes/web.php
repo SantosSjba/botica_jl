@@ -9,6 +9,8 @@ use App\Http\Controllers\Compras\ConsultaComprasController;
 use App\Http\Controllers\ConsultaProductosController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Reportes\CuadreCajaController;
+use App\Http\Controllers\Reportes\RptComprasController;
+use App\Http\Controllers\Reportes\RptVentasController;
 use App\Http\Controllers\Mantenimiento\CategoriaController as MantenimientoCategoriaController;
 use App\Http\Controllers\Mantenimiento\LoteController as MantenimientoLoteController;
 use App\Http\Controllers\Mantenimiento\PresentacionController as MantenimientoPresentacionController;
@@ -49,6 +51,14 @@ Route::middleware('auth')->group(function () {
 
     // Reportes: cuadre de caja (acceso según rol)
     Route::get('/reportes/cuadrecaja', [CuadreCajaController::class, 'show'])->name('reportes.cuadrecaja');
+
+    // Reportes: ventas y compras (solo ADMINISTRADOR)
+    Route::middleware('rol.administrador')->group(function () {
+        Route::get('/reportes/ventas', [RptVentasController::class, 'ventasRango'])->name('reportes.ventas.rango');
+        Route::get('/reportes/ventas-dia', [RptVentasController::class, 'ventasDia'])->name('reportes.ventas.dia');
+        Route::get('/reportes/compras', [RptComprasController::class, 'comprasRango'])->name('reportes.compras.rango');
+        Route::get('/reportes/compras-dia', [RptComprasController::class, 'comprasDia'])->name('reportes.compras.dia');
+    });
 
     // Compras (solo ADMINISTRADOR)
     Route::middleware('rol.administrador')->group(function () {
