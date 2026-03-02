@@ -137,7 +137,7 @@ class VentaController extends Controller
         return response()->json(['correlativo' => $numero]);
     }
 
-    /** Guardar venta. */
+    /** Guardar venta. Acepta forma única (forma, recibo, vuelto) o múltiples pagos (pagos[]). */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -145,7 +145,7 @@ class VentaController extends Controller
             'serie' => 'required|string|max:20',
             'correl' => 'required|integer|min:1',
             'fecha' => 'required|date',
-            'forma' => 'required|string|max:50',
+            'forma' => 'nullable|string|max:50',
             'numope' => 'nullable|string|max:50',
             'td' => 'required|integer|min:1|max:6',
             'numero' => 'nullable|string|max:20',
@@ -153,6 +153,11 @@ class VentaController extends Controller
             'dir' => 'nullable|string|max:500',
             'recibo' => 'nullable|numeric|min:0',
             'vuelto' => 'nullable|numeric|min:0',
+            'pagos' => 'nullable|array',
+            'pagos.*.tipo_pago' => 'required_with:pagos|string|in:EFECTIVO,YAPE,PLIN,TRANSFERENCIA,TARJETA,DEPOSITO EN CUENTA,OTRO',
+            'pagos.*.monto' => 'required_with:pagos|numeric|min:0.01',
+            'pagos.*.recibo' => 'nullable|numeric|min:0',
+            'pagos.*.numope' => 'nullable|string|max:100',
         ], [], [
             'tico' => 'tipo comprobante',
             'serie' => 'serie',
@@ -166,6 +171,16 @@ class VentaController extends Controller
 
         $totales = $this->ventaService->getTotales();
         $totalVenta = $totales['total'];
+        $pagos = $request->input('pagos');
+        $usarPagos = is_array($pagos) && count(array_filter($pagos, fn ($p) => (float) ($p['monto'] ?? 0) > 0)) > 0;
+
+        if ($usarPagos) {
+            $validated['forma'] = $validated['forma'] ?? 'EFECTIVO';
+        } else {
+            if (empty($validated['forma'])) {
+                return response()->json(['success' => false, 'message' => 'Seleccione forma de pago o agregue al menos un pago.'], 422);
+            }
+        }
 
         $data = [
             'tipo_comp' => $validated['tico'],
@@ -179,9 +194,13 @@ class VentaController extends Controller
             'razon_social' => trim($validated['rz']),
             'direccion' => trim($validated['dir'] ?? ''),
         ];
-        if ($validated['forma'] === 'EFECTIVO' && isset($validated['recibo'])) {
-            $data['efectivo'] = (float) $validated['recibo'];
-            $data['vuelto'] = (float) ($validated['vuelto'] ?? max(0, (float) $validated['recibo'] - $totalVenta));
+        if ($usarPagos) {
+            $data['pagos'] = $pagos;
+        } else {
+            if ($validated['forma'] === 'EFECTIVO' && isset($validated['recibo'])) {
+                $data['efectivo'] = (float) $validated['recibo'];
+                $data['vuelto'] = (float) ($validated['vuelto'] ?? max(0, (float) $validated['recibo'] - $totalVenta));
+            }
         }
 
         $result = $this->ventaService->guardarVenta($data);

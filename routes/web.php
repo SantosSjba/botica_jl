@@ -13,6 +13,7 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\Reportes\CuadreCajaController;
 use App\Http\Controllers\Reportes\ReporteTicketController;
 use App\Http\Controllers\Reportes\RptComprasController;
+use App\Http\Controllers\Reportes\RptIngresosPorPagoController;
 use App\Http\Controllers\Reportes\RptVentasController;
 use App\Http\Controllers\Ventas\ConsultaVentasController;
 use App\Http\Controllers\Ventas\ConsultaTicketsController;
@@ -94,6 +95,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/reportes/ventas-dia', [RptVentasController::class, 'ventasDia'])->name('reportes.ventas.dia');
         Route::get('/reportes/compras', [RptComprasController::class, 'comprasRango'])->name('reportes.compras.rango');
         Route::get('/reportes/compras-dia', [RptComprasController::class, 'comprasDia'])->name('reportes.compras.dia');
+        Route::get('/reportes/ingresos-por-pago', [RptIngresosPorPagoController::class, 'index'])->name('reportes.ingresos-por-pago');
         Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
         Route::get('/backup/download', [BackupController::class, 'download'])->name('backup.download');
         Route::get('/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');

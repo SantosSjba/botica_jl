@@ -255,29 +255,63 @@
         </table>
         <hr>
         <table>
-            <tr>
-                <td colspan="3"></td>
-                <td class="text-right">FORMA DE PAGO:</td>
-                <td class="text-right">{{ $venta->formadepago ?? 'EFECTIVO' }}</td>
-            </tr>
-            @if(!empty($venta->numope))
-            <tr>
-                <td colspan="3"></td>
-                <td class="text-right">Nº OPERACIÓN:</td>
-                <td class="text-right">{{ $venta->numope }}</td>
-            </tr>
-            @endif
-            @if((float)($venta->efectivo ?? 0) > 0)
-            <tr>
-                <td colspan="3"></td>
-                <td class="text-right">EFECTIVO:</td>
-                <td class="text-right">{{ number_format($venta->efectivo, 2, '.', '') }}</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td class="text-right">VUELTO:</td>
-                <td class="text-right">{{ number_format($venta->vuelto ?? 0, 2, '.', '') }}</td>
-            </tr>
+            @if($venta->pagos && $venta->pagos->isNotEmpty())
+                <tr>
+                    <td colspan="3"></td>
+                    <td class="text-right"><strong>FORMA DE PAGO</strong></td>
+                    <td></td>
+                </tr>
+                @foreach($venta->pagos as $pago)
+                    <tr>
+                        <td colspan="3"></td>
+                        <td class="text-right">{{ $pago->tipo_pago }}:</td>
+                        <td class="text-right">{{ number_format($pago->monto, 2, '.', '') }}</td>
+                    </tr>
+                    @if($pago->tipo_pago === 'EFECTIVO' && (float)($pago->recibo ?? 0) > 0)
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right">Recibido:</td>
+                            <td class="text-right">{{ number_format($pago->recibo, 2, '.', '') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right">Vuelto:</td>
+                            <td class="text-right">{{ number_format(max(0, (float)$pago->recibo - (float)$pago->monto), 2, '.', '') }}</td>
+                        </tr>
+                    @endif
+                    @if(!empty($pago->numope))
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right">Nº operación:</td>
+                            <td class="text-right">{{ $pago->numope }}</td>
+                        </tr>
+                    @endif
+                @endforeach
+            @else
+                <tr>
+                    <td colspan="3"></td>
+                    <td class="text-right">FORMA DE PAGO:</td>
+                    <td class="text-right">{{ $venta->formadepago ?? 'EFECTIVO' }}</td>
+                </tr>
+                @if(!empty($venta->numope))
+                <tr>
+                    <td colspan="3"></td>
+                    <td class="text-right">Nº OPERACIÓN:</td>
+                    <td class="text-right">{{ $venta->numope }}</td>
+                </tr>
+                @endif
+                @if((float)($venta->efectivo ?? 0) > 0)
+                <tr>
+                    <td colspan="3"></td>
+                    <td class="text-right">EFECTIVO:</td>
+                    <td class="text-right">{{ number_format($venta->efectivo, 2, '.', '') }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3"></td>
+                    <td class="text-right">VUELTO:</td>
+                    <td class="text-right">{{ number_format($venta->vuelto ?? 0, 2, '.', '') }}</td>
+                </tr>
+                @endif
             @endif
             <tr>
                 <td colspan="5">SON: {{ $cantidadEnLetras }}</td>

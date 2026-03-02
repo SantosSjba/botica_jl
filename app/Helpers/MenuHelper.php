@@ -116,6 +116,7 @@ class MenuHelper
                 'subItems' => [
                     ['name' => 'Rpt. Ventas', 'path' => route('reportes.ventas.rango')],
                     ['name' => 'Rpt. Ventas del día', 'path' => route('reportes.ventas.dia')],
+                    ['name' => 'Ingresos por tipo de pago', 'path' => route('reportes.ingresos-por-pago')],
                     ['name' => 'Rpt. Compras', 'path' => route('reportes.compras.rango')],
                     ['name' => 'Rpt. Compras del día', 'path' => route('reportes.compras.dia')],
                 ],

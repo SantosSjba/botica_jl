@@ -81,6 +81,22 @@
                     <p class="flex justify-between text-base font-semibold text-gray-800 dark:text-white/90"><span>Total:</span> <span>{{ $simboloMoneda }} {{ number_format((float)$venta->total, 2) }}</span></p>
                 </div>
             </div>
+            @if($venta->pagos && $venta->pagos->isNotEmpty())
+            <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-3 dark:border-gray-700 dark:bg-gray-800/30">
+                <p class="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">Pagos</p>
+                <ul class="space-y-1 text-sm">
+                    @foreach($venta->pagos as $pago)
+                        <li class="flex justify-between text-gray-700 dark:text-gray-300">
+                            <span>{{ $pago->tipo_pago }}{!! $pago->numope ? ' <span class="text-gray-500">(' . e($pago->numope) . ')</span>' : '' !!}</span>
+                            <span>{{ $simboloMoneda }} {{ number_format((float)$pago->monto, 2) }}</span>
+                        </li>
+                        @if($pago->tipo_pago === 'EFECTIVO' && (float)($pago->recibo ?? 0) > 0)
+                            <li class="flex justify-between text-gray-500 text-xs pl-4 dark:text-gray-400"><span>Recibido / Vuelto</span> <span>{{ $simboloMoneda }} {{ number_format((float)$pago->recibo, 2) }} / {{ number_format(max(0, (float)$pago->recibo - (float)$pago->monto), 2) }}</span></li>
+                        @endif
+                    @endforeach
+                </ul>
+            </div>
+            @endif
         </div>
     </x-common.component-card>
 </div>

@@ -78,7 +78,7 @@ class ConsultaVentasController extends Controller
 
     public function show(int $id): View
     {
-        $venta = Venta::with(['serie', 'cliente', 'usuario', 'detalles.producto.presentacion'])->findOrFail($id);
+        $venta = Venta::with(['serie', 'cliente', 'usuario', 'detalles.producto.presentacion', 'pagos'])->findOrFail($id);
 
         if ($venta->serie && $venta->serie->serie === 'T001') {
             abort(404, 'Esta venta es un ticket. Use Consulta tickets.');

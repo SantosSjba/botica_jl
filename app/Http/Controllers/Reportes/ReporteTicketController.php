@@ -31,6 +31,7 @@ class ReporteTicketController extends Controller
             'cliente.tipoDocumento',
             'serie',
             'detalles.producto.presentacion',
+            'pagos',
         ])->find($idventa);
 
         if (!$venta) {

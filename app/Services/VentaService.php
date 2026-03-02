@@ -6,6 +6,7 @@ use App\Models\Carrito;
 use App\Models\Cliente;
 use App\Models\Configuracion;
 use App\Models\DetalleVenta;
+use App\Models\PagoVenta;
 use App\Models\Producto;
 use App\Models\Serie;
 use App\Models\Venta;
@@ -327,10 +328,41 @@ class VentaService
         $idserie = $serie->idserie;
 
         $fechaEmision = $data['fecha_emision'] ?? now()->format('Y-m-d');
-        $formaPago = $data['forma_pago'] ?? 'EFECTIVO';
-        $numope = $data['numope'] ?? '';
-        $efectivo = isset($data['efectivo']) ? (float) $data['efectivo'] : null;
-        $vuelto = isset($data['vuelto']) ? (float) $data['vuelto'] : null;
+        $totalVenta = (float) $totales['total'];
+        $pagos = $data['pagos'] ?? null;
+
+        if (!empty($pagos) && is_array($pagos)) {
+            $sumaPagos = 0;
+            foreach ($pagos as $p) {
+                $sumaPagos += (float) ($p['monto'] ?? 0);
+            }
+            if (abs($sumaPagos - $totalVenta) > 0.01) {
+                return ['success' => false, 'message' => 'La suma de los pagos ('.number_format($sumaPagos, 2).') no coincide con el total a pagar ('.number_format($totalVenta, 2).').'];
+            }
+            $tipos = array_unique(array_column($pagos, 'tipo_pago'));
+            $formaPago = implode(', ', $tipos);
+            $efectivo = null;
+            $vuelto = null;
+            $numope = '';
+            foreach ($pagos as $p) {
+                if (($p['tipo_pago'] ?? '') === 'EFECTIVO') {
+                    $recibo = (float) ($p['recibo'] ?? $p['monto'] ?? 0);
+                    $montoEfe = (float) ($p['monto'] ?? 0);
+                    $efectivo = $recibo > 0 ? $recibo : null;
+                    $vuelto = $efectivo !== null ? max(0, $efectivo - $montoEfe) : null;
+                    break;
+                }
+            }
+            foreach ($pagos as $p) {
+                $n = trim($p['numope'] ?? '');
+                if ($n !== '') { $numope = $n; break; }
+            }
+        } else {
+            $formaPago = $data['forma_pago'] ?? 'EFECTIVO';
+            $numope = $data['numope'] ?? '';
+            $efectivo = isset($data['efectivo']) ? (float) $data['efectivo'] : null;
+            $vuelto = isset($data['vuelto']) ? (float) $data['vuelto'] : null;
+        }
 
         try {
             DB::beginTransaction();
@@ -359,6 +391,31 @@ class VentaService
                 'efectivo' => $efectivo,
                 'vuelto' => $vuelto,
             ]);
+
+            if (!empty($pagos) && is_array($pagos)) {
+                foreach ($pagos as $p) {
+                    $tipo = trim($p['tipo_pago'] ?? 'EFECTIVO');
+                    $monto = (float) ($p['monto'] ?? 0);
+                    if ($monto <= 0) continue;
+                    $recibo = isset($p['recibo']) ? (float) $p['recibo'] : null;
+                    $numopePago = trim($p['numope'] ?? '');
+                    PagoVenta::create([
+                        'idventa' => $idventa,
+                        'tipo_pago' => $tipo,
+                        'monto' => $monto,
+                        'recibo' => $tipo === 'EFECTIVO' ? $recibo : null,
+                        'numope' => $numopePago !== '' ? $numopePago : null,
+                    ]);
+                }
+            } else {
+                PagoVenta::create([
+                    'idventa' => $idventa,
+                    'tipo_pago' => $formaPago,
+                    'monto' => $totalVenta,
+                    'recibo' => $efectivo,
+                    'numope' => $numope !== '' ? $numope : null,
+                ]);
+            }
 
             $item = 0;
             foreach ($items as $row) {

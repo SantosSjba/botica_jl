@@ -87,23 +87,7 @@
                     <label for="fecha" class="{{ $labelClass }}">Fecha de emisión <span class="text-red-500">*</span></label>
                     <input type="date" id="fecha" name="fecha" value="{{ date('Y-m-d') }}" required class="{{ $inputClass }}" />
                 </div>
-                <div>
-                    <label for="forma" class="{{ $labelClass }}">Forma de pago <span class="text-red-500">*</span></label>
-                    <x-form.select-wrapper id="forma" name="forma" required>
-                        <option value="">Seleccione</option>
-                        <option value="EFECTIVO">EFECTIVO</option>
-                        <option value="YAPE">YAPE</option>
-                        <option value="PLIN">PLIN</option>
-                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-                        <option value="TARJETA">TARJETA</option>
-                        <option value="DEPOSITO EN CUENTA">DEPÓSITO EN CUENTA</option>
-                        <option value="OTRO">OTRO</option>
-                    </x-form.select-wrapper>
-                </div>
-                <div id="ventas-numope-wrap" class="hidden">
-                    <label for="numope" class="{{ $labelClass }}">Nº operación / Referencia</label>
-                    <input type="text" id="numope" name="numope" placeholder="Opcional" class="{{ $inputClass }}" />
-                </div>
+                <input type="hidden" id="forma" name="forma" value="EFECTIVO" />
                 <div>
                     <label for="td" class="{{ $labelClass }}">Tipo documento <span class="text-red-500">*</span></label>
                     <x-form.select-wrapper id="td" name="td" required>
@@ -127,20 +111,56 @@
                     <label for="dir" class="{{ $labelClass }}">Dirección</label>
                     <textarea id="dir" name="dir" rows="2" class="{{ $inputClass }}" placeholder="Dirección del cliente"></textarea>
                 </div>
-                <div id="ventas-efectivo-wrap" class="space-y-2 hidden sm:col-span-2">
-                    <div class="grid gap-2 sm:grid-cols-2">
-                        <div>
-                            <label for="recibo" class="{{ $labelClass }}">Efectivo recibido</label>
-                            <div class="flex gap-2">
-                                <input type="number" id="recibo" name="recibo" min="0" step="0.01" placeholder="0.00" class="{{ $inputClass }}" />
-                                <button type="button" id="ventas-btn-calcular-vuelto" class="shrink-0 rounded-lg bg-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Calcular</button>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="vuelto" class="{{ $labelClass }}">Vuelto</label>
-                            <input type="text" id="vuelto" name="vuelto" readonly class="{{ $inputReadonlyClass }}" />
+                <div class="sm:col-span-2 lg:col-span-4">
+                    <label class="{{ $labelClass }}">Pagos <span class="text-red-500">*</span></label>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Agregue uno o más pagos (ej. parte YAPE y parte efectivo). La suma debe coincidir con el total a pagar.</p>
+                    <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+                        <table class="w-full min-w-[640px]" id="ventas-pagos-tabla">
+                            <thead>
+                                <tr class="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Tipo</th>
+                                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-28">Monto (S/)</th>
+                                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-28">Recibo (efectivo)</th>
+                                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 w-24">Vuelto</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Nº operación</th>
+                                    <th class="w-12"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="ventas-pagos-tbody">
+                                <tr class="ventas-pago-row border-b border-gray-100 dark:border-gray-800" data-index="0">
+                                    <td class="px-3 py-2">
+                                        <div class="ventas-pago-tipo-wrap max-w-[200px]">
+                                            <x-form.select-wrapper name="pagos[0][tipo_pago]" id="pago-tipo-0" class="ventas-pago-tipo py-2 h-10 w-full" data-index="0">
+                                                <option value="EFECTIVO">EFECTIVO</option>
+                                                <option value="YAPE">YAPE</option>
+                                                <option value="PLIN">PLIN</option>
+                                                <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                                                <option value="TARJETA">TARJETA</option>
+                                                <option value="DEPOSITO EN CUENTA">DEPÓSITO EN CUENTA</option>
+                                                <option value="OTRO">OTRO</option>
+                                            </x-form.select-wrapper>
+                                        </div>
+                                    </td>
+                                    <td class="px-3 py-2"><input type="number" name="pagos[0][monto]" min="0" step="0.01" placeholder="0.00" class="ventas-pago-monto {{ $inputClass }} py-2 h-10 text-right w-full" data-index="0" /></td>
+                                    <td class="px-3 py-2 ventas-recibo-cell"><input type="number" name="pagos[0][recibo]" min="0" step="0.01" placeholder="—" class="ventas-pago-recibo {{ $inputClass }} py-2 h-10 text-right w-full" data-index="0" /></td>
+                                    <td class="px-3 py-2 ventas-vuelto-cell"><input type="text" readonly class="ventas-pago-vuelto {{ $inputReadonlyClass }} py-2 h-10 text-right w-full" value="0.00" /></td>
+                                    <td class="px-3 py-2 ventas-numope-cell"><input type="text" name="pagos[0][numope]" placeholder="Opcional" class="ventas-pago-numope {{ $inputClass }} py-2 h-10 w-full" data-index="0" /></td>
+                                    <td class="px-3 py-2"><button type="button" class="ventas-pago-quitar rounded-lg border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50" data-index="0" title="Quitar pago">Quitar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="flex flex-wrap items-center gap-3 border-t border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/50">
+                            <button type="button" id="ventas-pago-agregar" class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                                Agregar pago
+                            </button>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Total a pagar: <strong id="ventas-total-pagar">{{ $simboloMoneda ?? 'S/' }} {{ number_format($totales['total'] ?? 0, 2) }}</strong></span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Suma pagos: <strong id="ventas-suma-pagos">0.00</strong></span>
+                            <span id="ventas-pagos-diferencia" class="text-sm font-medium text-amber-600 dark:text-amber-400">Falta completar</span>
                         </div>
                     </div>
+                    <input type="hidden" id="recibo" name="recibo" value="" />
+                    <input type="hidden" id="vuelto" name="vuelto" value="" />
                 </div>
             </div>
         </x-common.component-card>
@@ -265,6 +285,7 @@ document.addEventListener('alpine:init', function() {
                     if (c) c.innerHTML = await carritoRes.text();
                     if (t) t.innerHTML = await totalRes.text();
                     if (i) i.innerHTML = await igvRes.text();
+                    if (typeof window.ventasActualizarPagosResumen === 'function') window.ventasActualizarPagosResumen();
                     this.rebindCarrito();
                     if (typeof window.ventasActualizarVuelto === 'function') window.ventasActualizarVuelto();
                     if (feedbackMessage) { this.carritoFeedback = feedbackMessage; setTimeout(function() { this.carritoFeedback = ''; }.bind(this), 2500); }
@@ -389,6 +410,14 @@ document.addEventListener('alpine:init', function() {
             async registrarVenta(e) {
                 e.preventDefault();
                 const form = document.getElementById('frmVenta');
+                const totalEl = document.getElementById('ventas-total-input');
+                const totalVenta = parseFloat(totalEl && totalEl.value ? totalEl.value.replace(',', '.') : 0) || 0;
+                const suma = typeof window.ventasSumaPagos === 'function' ? window.ventasSumaPagos() : 0;
+                if (Math.abs(suma - totalVenta) > 0.02) {
+                    alert('La suma de los pagos (' + suma.toFixed(2) + ') debe coincidir con el total a pagar (' + totalVenta.toFixed(2) + ').');
+                    this.loading = false;
+                    return;
+                }
                 const fd = new FormData(form);
                 const td = fd.get('td');
                 const numero = (fd.get('numero') || '').toString().trim();
@@ -401,12 +430,14 @@ document.addEventListener('alpine:init', function() {
                 }
                 if (td === '1') { form.querySelector('#td').value = '2'; fd.set('td', '2'); }
                 if (numero === '') fd.set('numero', '00000000');
+                const firstTipo = document.querySelector('.ventas-pago-tipo');
+                if (firstTipo && form.querySelector('#forma')) form.querySelector('#forma').value = firstTipo.value;
                 const res = await fetch(this.routes.store, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
                 const data = await res.json();
                 this.loading = false;
                 if (data.success) {
                     await this.refreshCarrito();
-                    document.getElementById('recibo').value = ''; document.getElementById('vuelto').value = '';
+                    if (typeof window.ventasResetPagos === 'function') window.ventasResetPagos();
                     if (data.idventa) window.open(this.baseUrl + '/reportes/ticket?idventa=' + data.idventa + '&formato=ticket', '_blank');
                     alert(data.message || 'Venta registrada.');
                 } else {
@@ -435,30 +466,105 @@ document.addEventListener('alpine:init', function() {
             else { opts.forEach(o => { o.disabled = false; }); }
         });
     }
-    const forma = document.getElementById('forma');
-    if (forma) {
-        forma.addEventListener('change', function() {
-            const f = forma.value;
-            document.getElementById('ventas-efectivo-wrap').classList.toggle('hidden', f !== 'EFECTIVO');
-            document.getElementById('ventas-numope-wrap').classList.toggle('hidden', f !== 'TARJETA' && f !== 'YAPE' && f !== 'PLIN' && f !== 'TRANSFERENCIA' && f !== 'OTRO');
-            if (f === 'EFECTIVO' && typeof window.ventasActualizarVuelto === 'function') window.ventasActualizarVuelto();
+    var ventasPagoIndex = 1;
+    var simboloMoneda = '{{ $simboloMoneda ?? "S/" }}';
+    function ventasPagosTipoOptions() {
+        return '<option value="EFECTIVO">EFECTIVO</option><option value="YAPE">YAPE</option><option value="PLIN">PLIN</option><option value="TRANSFERENCIA">TRANSFERENCIA</option><option value="TARJETA">TARJETA</option><option value="DEPOSITO EN CUENTA">DEPÓSITO EN CUENTA</option><option value="OTRO">OTRO</option>';
+    }
+    function ventasToggleRowCells(row) {
+        var tipo = (row.querySelector('.ventas-pago-tipo') || {}).value;
+        var reciboCell = row.querySelector('.ventas-recibo-cell');
+        var vueltoCell = row.querySelector('.ventas-vuelto-cell');
+        var numopeCell = row.querySelector('.ventas-numope-cell');
+        var isEfectivo = tipo === 'EFECTIVO';
+        if (reciboCell) reciboCell.style.display = isEfectivo ? '' : 'none';
+        if (vueltoCell) vueltoCell.style.display = isEfectivo ? '' : 'none';
+        if (numopeCell) numopeCell.style.display = !isEfectivo ? '' : 'none';
+    }
+    function ventasActualizarVueltoRow(row) {
+        var tipo = row.querySelector('.ventas-pago-tipo');
+        if (tipo && tipo.value !== 'EFECTIVO') return;
+        var monto = parseFloat((row.querySelector('.ventas-pago-monto') || {}).value) || 0;
+        var recibo = parseFloat((row.querySelector('.ventas-pago-recibo') || {}).value) || 0;
+        var vueltoEl = row.querySelector('.ventas-pago-vuelto');
+        if (vueltoEl) vueltoEl.value = Math.max(0, recibo - monto).toFixed(2);
+    }
+    function ventasSumaPagos() {
+        var total = 0;
+        document.querySelectorAll('.ventas-pago-monto').forEach(function(inp) {
+            total += parseFloat(inp.value) || 0;
         });
+        return total;
     }
-    function actualizarVuelto() {
-        var forma = document.getElementById('forma');
-        if (forma && forma.value !== 'EFECTIVO') return;
-        var reciboEl = document.getElementById('recibo');
+    function ventasActualizarPagosResumen() {
         var totalEl = document.getElementById('ventas-total-input');
-        var vueltoEl = document.getElementById('vuelto');
-        if (!reciboEl || !totalEl || !vueltoEl) return;
-        var recibo = parseFloat(reciboEl.value) || 0;
-        var total = parseFloat(totalEl.value) || 0;
-        vueltoEl.value = (recibo - total).toFixed(2);
+        var totalVenta = totalEl ? (parseFloat(totalEl.value.replace(',', '.')) || 0) : 0;
+        var suma = ventasSumaPagos();
+        var diff = totalVenta - suma;
+        var totalPagarEl = document.getElementById('ventas-total-pagar');
+        var sumaEl = document.getElementById('ventas-suma-pagos');
+        var diffEl = document.getElementById('ventas-pagos-diferencia');
+        if (totalPagarEl) totalPagarEl.textContent = simboloMoneda + ' ' + totalVenta.toFixed(2);
+        if (sumaEl) sumaEl.textContent = suma.toFixed(2);
+        if (diffEl) {
+            if (Math.abs(diff) < 0.02) { diffEl.textContent = 'Completo'; diffEl.className = 'text-sm font-medium text-green-600 dark:text-green-400'; }
+            else if (diff > 0) { diffEl.textContent = 'Falta: ' + diff.toFixed(2); diffEl.className = 'text-sm font-medium text-amber-600 dark:text-amber-400'; }
+            else { diffEl.textContent = 'Exceso: ' + (-diff).toFixed(2); diffEl.className = 'text-sm font-medium text-red-600 dark:text-red-400'; }
+        }
     }
-    window.ventasActualizarVuelto = actualizarVuelto;
-    document.getElementById('recibo')?.addEventListener('input', actualizarVuelto);
-    document.getElementById('recibo')?.addEventListener('change', actualizarVuelto);
-    document.getElementById('ventas-btn-calcular-vuelto')?.addEventListener('click', actualizarVuelto);
+    window.ventasSumaPagos = ventasSumaPagos;
+    window.ventasActualizarPagosResumen = ventasActualizarPagosResumen;
+    window.ventasResetPagos = function() {
+        var tbody = document.getElementById('ventas-pagos-tbody');
+        if (!tbody) return;
+        var rows = tbody.querySelectorAll('.ventas-pago-row');
+        for (var i = 1; i < rows.length; i++) rows[i].remove();
+        var first = tbody.querySelector('.ventas-pago-row');
+        if (first) {
+            first.querySelector('.ventas-pago-tipo').value = 'EFECTIVO';
+            first.querySelector('.ventas-pago-monto').value = '';
+            first.querySelector('.ventas-pago-recibo').value = '';
+            first.querySelector('.ventas-pago-vuelto').value = '0.00';
+            first.querySelector('.ventas-pago-numope').value = '';
+            ventasToggleRowCells(first);
+        }
+        ventasActualizarPagosResumen();
+    };
+    document.getElementById('ventas-pago-agregar')?.addEventListener('click', function() {
+        var tbody = document.getElementById('ventas-pagos-tbody');
+        if (!tbody) return;
+        var firstRow = tbody.querySelector('.ventas-pago-row');
+        if (!firstRow) return;
+        var idx = ventasPagoIndex++;
+        var tr = document.createElement('tr');
+        tr.className = 'ventas-pago-row border-b border-gray-100 dark:border-gray-800';
+        tr.setAttribute('data-index', idx);
+        tr.innerHTML = '<td class="px-3 py-2"><div class="relative z-20 bg-transparent max-w-[200px]"><select name="pagos[' + idx + '][tipo_pago]" class="ventas-pago-tipo {{ $selectClass }} py-2 h-10 w-full pr-11" data-index="' + idx + '">' + ventasPagosTipoOptions() + '</select><span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400"><svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span></div></td>' +
+            '<td class="px-3 py-2"><input type="number" name="pagos[' + idx + '][monto]" min="0" step="0.01" placeholder="0.00" class="ventas-pago-monto {{ $inputClass }} py-2 h-10 text-right w-full" data-index="' + idx + '" /></td>' +
+            '<td class="px-3 py-2 ventas-recibo-cell"><input type="number" name="pagos[' + idx + '][recibo]" min="0" step="0.01" placeholder="—" class="ventas-pago-recibo {{ $inputClass }} py-2 h-10 text-right w-full" data-index="' + idx + '" /></td>' +
+            '<td class="px-3 py-2 ventas-vuelto-cell"><input type="text" readonly class="ventas-pago-vuelto {{ $inputReadonlyClass }} py-2 h-10 text-right w-full" value="0.00" /></td>' +
+            '<td class="px-3 py-2 ventas-numope-cell" style="display:none"><input type="text" name="pagos[' + idx + '][numope]" placeholder="Opcional" class="ventas-pago-numope {{ $inputClass }} py-2 h-10 w-full" data-index="' + idx + '" /></td>' +
+            '<td class="px-3 py-2"><button type="button" class="ventas-pago-quitar rounded-lg border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50" data-index="' + idx + '" title="Quitar pago">Quitar</button></td>';
+        tbody.appendChild(tr);
+        ventasToggleRowCells(tr);
+        tr.querySelector('.ventas-pago-tipo').addEventListener('change', function() { ventasToggleRowCells(tr); });
+        tr.querySelector('.ventas-pago-monto').addEventListener('input', function() { ventasActualizarVueltoRow(tr); ventasActualizarPagosResumen(); });
+        tr.querySelector('.ventas-pago-recibo').addEventListener('input', function() { ventasActualizarVueltoRow(tr); ventasActualizarPagosResumen(); });
+        tr.querySelector('.ventas-pago-quitar').addEventListener('click', function() { tr.remove(); ventasActualizarPagosResumen(); });
+    });
+    document.getElementById('ventas-pagos-tbody')?.querySelectorAll('.ventas-pago-row').forEach(function(row) {
+        ventasToggleRowCells(row);
+        row.querySelector('.ventas-pago-tipo')?.addEventListener('change', function() { ventasToggleRowCells(row); });
+        row.querySelector('.ventas-pago-monto')?.addEventListener('input', function() { ventasActualizarVueltoRow(row); ventasActualizarPagosResumen(); });
+        row.querySelector('.ventas-pago-recibo')?.addEventListener('input', function() { ventasActualizarVueltoRow(row); ventasActualizarPagosResumen(); });
+        row.querySelector('.ventas-pago-quitar')?.addEventListener('click', function() {
+            if (document.querySelectorAll('.ventas-pago-row').length <= 1) return;
+            row.remove();
+            ventasActualizarPagosResumen();
+        });
+    });
+    document.getElementById('ventas-total-input')?.addEventListener('change', ventasActualizarPagosResumen);
+    ventasActualizarPagosResumen();
 })();
 </script>
 @endpush

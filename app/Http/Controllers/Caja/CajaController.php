@@ -9,6 +9,7 @@ use App\Models\CajaCierre;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class CajaController extends Controller
@@ -118,16 +119,48 @@ class CajaController extends Controller
         $fechaCaja = $cajaAbierta->fecha->format('Y-m-d');
         $idUsuario = $user->idusu ?? $user->getAuthIdentifier();
 
-        // Totales por forma de pago (ventas no anuladas del día de la caja y del cajero)
-        $porForma = DB::table('venta')
-            ->where('fecha_emision', $fechaCaja)
-            ->where('idusuario', $idUsuario)
-            ->whereNotIn('estado', ['anulado'])
-            ->selectRaw('formadepago, COALESCE(SUM(total), 0) as total')
-            ->groupBy('formadepago')
-            ->pluck('total', 'formadepago')
-            ->map(fn ($v) => (float) $v)
-            ->all();
+        // Totales por tipo de pago: desde pago_venta si existe, más ventas antiguas sin detalle de pagos
+        $porForma = [];
+        if (Schema::hasTable('pago_venta')) {
+            $desdePagoVenta = DB::table('pago_venta')
+                ->join('venta', 'pago_venta.idventa', '=', 'venta.idventa')
+                ->where('venta.fecha_emision', $fechaCaja)
+                ->where('venta.idusuario', $idUsuario)
+                ->whereNotIn('venta.estado', ['anulado'])
+                ->selectRaw('pago_venta.tipo_pago, COALESCE(SUM(pago_venta.monto), 0) as total')
+                ->groupBy('pago_venta.tipo_pago')
+                ->pluck('total', 'tipo_pago')
+                ->map(fn ($v) => (float) $v)
+                ->all();
+            $ventasConPagos = DB::table('pago_venta')->distinct()->pluck('idventa')->all();
+            $ventasSinPagos = DB::table('venta')
+                ->where('fecha_emision', $fechaCaja)
+                ->where('idusuario', $idUsuario)
+                ->whereNotIn('estado', ['anulado']);
+            if (count($ventasConPagos) > 0) {
+                $ventasSinPagos->whereNotIn('idventa', $ventasConPagos);
+            }
+            $legacy = $ventasSinPagos
+                ->selectRaw('formadepago, COALESCE(SUM(total), 0) as total')
+                ->groupBy('formadepago')
+                ->pluck('total', 'formadepago')
+                ->map(fn ($v) => (float) $v)
+                ->all();
+            $porForma = $desdePagoVenta;
+            foreach ($legacy as $tipo => $monto) {
+                $porForma[$tipo] = ($porForma[$tipo] ?? 0) + $monto;
+            }
+        } else {
+            $porForma = DB::table('venta')
+                ->where('fecha_emision', $fechaCaja)
+                ->where('idusuario', $idUsuario)
+                ->whereNotIn('estado', ['anulado'])
+                ->selectRaw('formadepago, COALESCE(SUM(total), 0) as total')
+                ->groupBy('formadepago')
+                ->pluck('total', 'formadepago')
+                ->map(fn ($v) => (float) $v)
+                ->all();
+        }
 
         $formaEfectivo = $porForma['EFECTIVO'] ?? 0;
         $formaTarjeta = $porForma['TARJETA'] ?? 0;
