@@ -14,8 +14,8 @@ class Venta extends Model
 
     protected $fillable = [
         'idventa', 'idconf', 'tipocomp', 'idcliente', 'idusuario', 'idserie', 'fecha_emision',
-        'op_gravadas', 'op_exoneradas', 'op_inafectas', 'igv', 'total', 'estado', 'numope',
-        'formadepago', 'efectivo', 'vuelto',
+        'op_gravadas', 'op_exoneradas', 'op_inafectas', 'igv', 'total', 'estado', 'feestado', 'numope',
+        'formadepago', 'efectivo', 'vuelto', 'nombrexml', 'femensajesunat',
     ];
 
     protected $casts = [
@@ -37,6 +37,11 @@ class Venta extends Model
     public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'idcliente', 'idcliente');
+    }
+
+    public function serie()
+    {
+        return $this->belongsTo(Serie::class, 'idserie', 'idserie');
     }
 
     public function detalles()

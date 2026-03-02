@@ -13,6 +13,9 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\Reportes\CuadreCajaController;
 use App\Http\Controllers\Reportes\RptComprasController;
 use App\Http\Controllers\Reportes\RptVentasController;
+use App\Http\Controllers\Ventas\ConsultaVentasController;
+use App\Http\Controllers\Ventas\ConsultaTicketsController;
+use App\Http\Controllers\Ventas\NotaCreditoController;
 use App\Http\Controllers\Ventas\VentaController;
 use App\Http\Controllers\Mantenimiento\CategoriaController as MantenimientoCategoriaController;
 use App\Http\Controllers\Mantenimiento\LoteController as MantenimientoLoteController;
@@ -66,6 +69,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/ventas/carrito/quitar', [VentaController::class, 'removeItem'])->name('ventas.carrito.quitar');
     Route::post('/ventas/correlativo', [VentaController::class, 'correlativo'])->name('ventas.correlativo');
     Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
+
+    Route::get('/ventas/consulta', [ConsultaVentasController::class, 'index'])->name('ventas.consulta.index');
+    Route::get('/ventas/consulta/{id}', [ConsultaVentasController::class, 'show'])->name('ventas.consulta.show')->whereNumber('id');
+
+    Route::get('/ventas/tickets', [ConsultaTicketsController::class, 'index'])->name('ventas.tickets.index');
+    Route::post('/ventas/tickets/anular', [ConsultaTicketsController::class, 'anular'])->name('ventas.tickets.anular');
+
+    Route::get('/ventas/nota-credito', [NotaCreditoController::class, 'index'])->name('notacredito.index');
+    Route::post('/ventas/nota-credito/buscar', [NotaCreditoController::class, 'buscarReferencia'])->name('notacredito.buscar');
+    Route::post('/ventas/nota-credito/correlativo', [NotaCreditoController::class, 'siguienteCorrelativo'])->name('notacredito.correlativo');
+    Route::post('/ventas/nota-credito', [NotaCreditoController::class, 'store'])->name('notacredito.store');
 
     // Reportes: cuadre de caja (acceso según rol)
     Route::get('/reportes/cuadrecaja', [CuadreCajaController::class, 'show'])->name('reportes.cuadrecaja');

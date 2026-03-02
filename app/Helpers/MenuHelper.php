@@ -65,17 +65,17 @@ class MenuHelper
 
         // Ventas — solo si caja abierta
         if (PermisosHelper::puedeVerMenuVentas()) {
-            $items[] = [
-                'name' => 'Ventas',
-                'icon' => 'ecommerce',
-                'path' => '#',
-                'subItems' => [
-                    ['name' => 'Ventas', 'path' => route('ventas.index')],
-                    ['name' => 'Consulta ventas', 'path' => $enDesarrollo],
-                    ['name' => 'Consulta tickets', 'path' => $enDesarrollo],
-                    ['name' => 'Nota de crédito', 'path' => $enDesarrollo],
-                ],
-            ];
+                $items[] = [
+                    'name' => 'Ventas',
+                    'icon' => 'ecommerce',
+                    'path' => '#',
+                    'subItems' => [
+                        ['name' => 'Ventas', 'path' => route('ventas.index')],
+                        ['name' => 'Consulta ventas', 'path' => route('ventas.consulta.index')],
+                        ['name' => 'Consulta tickets', 'path' => route('ventas.tickets.index')],
+                        ['name' => 'Nota de crédito', 'path' => route('notacredito.index')],
+                    ],
+                ];
         }
 
         // Caja — ambos; subítems según estado
