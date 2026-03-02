@@ -80,7 +80,7 @@
                                             <span x-show="loading" x-cloak style="display: none;">Eliminando...</span>
                                         </button>
                                     </form>
-                                    <a href="{{ route('en-desarrollo') }}?idproducto={{ $p->idproducto }}">
+                                    <a href="{{ route('mantenimiento.productos.similares', $p) }}">
                                         <x-ui.button type="button" variant="outline" size="sm" class="!py-2 !px-3 text-theme-xs">Similar</x-ui.button>
                                     </a>
                                 </div>

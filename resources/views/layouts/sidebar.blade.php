@@ -55,8 +55,8 @@
         </a>
     </div>
 
-    <!-- Navigation Menu -->
-    <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+    <!-- Navigation Menu (scrollable when content overflows) -->
+    <div class="flex flex-1 flex-col min-h-0 overflow-y-auto duration-300 ease-linear custom-scrollbar">
         <nav class="mb-6">
             <div class="flex flex-col gap-4">
                 @foreach ($menuGroups as $groupIndex => $menuGroup)

@@ -211,6 +211,111 @@ class ProductoController extends Controller
         return $this->successRedirect('Producto eliminado correctamente.', $route);
     }
 
+    /**
+     * Búsqueda de productos para agregar como similar (JSON).
+     */
+    public function buscarParaSimilar(Request $request): JsonResponse
+    {
+        $q = $request->input('q', '');
+        $q = trim($q);
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+        $productos = Producto::query()
+            ->join('presentacion', 'productos.idpresentacion', '=', 'presentacion.idpresentacion')
+            ->where(function ($query) use ($q) {
+                $term = '%' . $q . '%';
+                $query->where('productos.descripcion', 'like', $term)
+                    ->orWhere('productos.codigo', 'like', $term);
+            })
+            ->select('productos.idproducto', 'productos.descripcion', 'presentacion.presentacion as presentacion_nombre')
+            ->limit(25)
+            ->get();
+        return response()->json($productos->map(fn ($p) => [
+            'idproducto' => $p->idproducto,
+            'descripcion' => $p->descripcion,
+            'presentacion' => $p->presentacion_nombre ?? '',
+        ]));
+    }
+
+    /**
+     * Mostrar similares: por mismo síntoma/dolencia y los agregados manualmente.
+     */
+    public function similares(Producto $producto): View
+    {
+        $producto->load(['presentacion', 'sintoma']);
+        $porSintoma = [];
+        if ($producto->idsintoma) {
+            $porSintoma = Producto::query()
+                ->where('idsintoma', $producto->idsintoma)
+                ->where('idproducto', '!=', $producto->idproducto)
+                ->with('presentacion')
+                ->orderBy('descripcion')
+                ->get();
+        }
+        $agregados = DB::table('producto_similar')
+            ->where('idproducto', $producto->idproducto)
+            ->get();
+        $simboloMoneda = Configuracion::first()?->simbolo_moneda ?? 'S/';
+
+        return view('pages.mantenimiento.productos.similares', [
+            'title' => 'Productos similares',
+            'producto' => $producto,
+            'porSintoma' => $porSintoma,
+            'agregados' => $agregados,
+            'simboloMoneda' => $simboloMoneda,
+        ]);
+    }
+
+    /**
+     * Agregar un producto como similar (manual).
+     */
+    public function storeSimilar(Request $request, Producto $producto): RedirectResponse
+    {
+        $request->validate([
+            'idproducto_similar' => 'required|exists:productos,idproducto',
+        ]);
+        $otro = Producto::with('presentacion')->findOrFail($request->idproducto_similar);
+        if ((int) $otro->idproducto === (int) $producto->idproducto) {
+            return redirect()->route('mantenimiento.productos.similares', $producto)
+                ->with('error', 'No puede agregar el mismo producto como similar.');
+        }
+        $existe = DB::table('producto_similar')
+            ->where('idproducto', $producto->idproducto)
+            ->where('producto', $otro->descripcion)
+            ->where('presentacion', $otro->presentacion?->presentacion ?? '')
+            ->exists();
+        if ($existe) {
+            return redirect()->route('mantenimiento.productos.similares', $producto)
+                ->with('error', 'Ese producto ya está en la lista de similares.');
+        }
+        DB::table('producto_similar')->insert([
+            'idproducto' => $producto->idproducto,
+            'producto' => $otro->descripcion,
+            'presentacion' => $otro->presentacion?->presentacion ?? '',
+        ]);
+        return redirect()->route('mantenimiento.productos.similares', $producto)
+            ->with('success', 'Producto similar agregado.');
+    }
+
+    /**
+     * Quitar un similar agregado manualmente (por producto + presentación).
+     */
+    public function destroySimilar(Request $request, Producto $producto): RedirectResponse
+    {
+        $request->validate([
+            'producto' => 'required|string|max:500',
+            'presentacion' => 'required|string|max:255',
+        ]);
+        DB::table('producto_similar')
+            ->where('idproducto', $producto->idproducto)
+            ->where('producto', $request->producto)
+            ->where('presentacion', $request->presentacion)
+            ->delete();
+        return redirect()->route('mantenimiento.productos.similares', $producto)
+            ->with('success', 'Similar quitado.');
+    }
+
     private function getLotesOrdenados()
     {
         return Lote::orderByRaw("CASE WHEN numero LIKE '%SIN LOTE%' OR numero = '0000' THEN 0 ELSE 1 END")

@@ -8,7 +8,7 @@
 <div class="min-w-0 space-y-6">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
-    <x-common.component-card title="Reporte ventas del día" desc="Ventas de un día. Detalle por ítem. Excluye anuladas.">
+    <x-common.component-card title="Reporte ventas del día" desc="{{ isset($soloMisVentas) && $soloMisVentas ? 'Sus ventas del día. Detalle por ítem. Excluye anuladas.' : 'Ventas de todos los usuarios del día. Detalle por ítem. Excluye anuladas.' }}">
         <div class="space-y-4">
             <form method="get" action="{{ route('reportes.ventas.dia') }}" class="flex flex-wrap items-end gap-4">
                 <div>
@@ -18,7 +18,14 @@
                 <x-ui.button type="submit" variant="primary" size="md" class="shrink-0">Ver reporte</x-ui.button>
             </form>
 
-            <p class="text-sm text-gray-600 dark:text-gray-400"><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($fecha)->locale('es')->translatedFormat('d/m/Y') }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                <strong>Fecha:</strong> {{ \Carbon\Carbon::parse($fecha)->locale('es')->translatedFormat('d/m/Y') }}
+                @if(isset($soloMisVentas) && $soloMisVentas)
+                    <span class="ml-2 text-gray-500 dark:text-gray-400">(sus ventas)</span>
+                @else
+                    <span class="ml-2 text-gray-500 dark:text-gray-400">(todas las ventas)</span>
+                @endif
+            </p>
 
             <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
                 <table class="w-full min-w-[600px] text-left text-sm text-gray-700 dark:text-gray-300">

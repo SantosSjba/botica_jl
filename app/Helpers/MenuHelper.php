@@ -7,12 +7,14 @@ use App\Helpers\PermisosHelper;
 class MenuHelper
 {
     /**
-     * Menú principal filtrado por rol y estado de caja (sistema antiguo).
+     * Menú principal filtrado por rol y estado de caja (alineado con dashboard antiguo centralproducto.php).
      * - Inicio, Consultas: ambos roles.
-     * - Mantenimiento: solo ADMINISTRADOR; USUARIO ve solo "Clientes" (un enlace).
-     * - Ventas: solo si caja abierta.
-     * - Caja: ambos; subítems según estado (Apertura/Cierre/Seguimiento).
-     * - Compras, Reportes, Backup, Configuración: solo ADMINISTRADOR.
+     * - Mantenimiento: solo ADMINISTRADOR (Cliente, Producto, Forma farmacéutica, Presentación, Usuario, Síntomas, Lote).
+     * - USUARIO: solo enlace "Clientes".
+     * - Ventas: solo si caja abierta (ambos roles).
+     * - Caja: ambos; Apertura/Cierre/Seguimiento según estado (Seguimiento: ADMIN siempre; USUARIO si Abierto o Cerrado).
+     * - Reportes: Rpt. Ventas del día para todos; resto solo ADMINISTRADOR.
+     * - Compras, Backup, Configuración, Acerca de: solo ADMINISTRADOR.
      */
     public static function getMainNavItems(): array
     {
@@ -98,7 +100,21 @@ class MenuHelper
             ];
         }
 
-        // Compras, Reportes, Backup, Configuración — solo ADMINISTRADOR
+        // Reporte ventas del día: todos los usuarios (admin ve todo, usuario solo sus ventas)
+        $items[] = [
+            'name' => 'Reportes',
+            'icon' => 'charts',
+            'path' => '#',
+            'subItems' => array_filter([
+                ['name' => 'Rpt. Ventas del día', 'path' => route('reportes.ventas.dia')],
+                PermisosHelper::isAdministrador() ? ['name' => 'Rpt. Ventas', 'path' => route('reportes.ventas.rango')] : null,
+                PermisosHelper::isAdministrador() ? ['name' => 'Ingresos por tipo de pago', 'path' => route('reportes.ingresos-por-pago')] : null,
+                PermisosHelper::isAdministrador() ? ['name' => 'Rpt. Compras', 'path' => route('reportes.compras.rango')] : null,
+                PermisosHelper::isAdministrador() ? ['name' => 'Rpt. Compras del día', 'path' => route('reportes.compras.dia')] : null,
+            ]),
+        ];
+
+        // Compras, Backup, Configuración — solo ADMINISTRADOR
         if (PermisosHelper::isAdministrador()) {
             $items[] = [
                 'name' => 'Compras',
@@ -107,18 +123,6 @@ class MenuHelper
                 'subItems' => [
                     ['name' => 'Compras', 'path' => route('compras.create')],
                     ['name' => 'Consulta compras', 'path' => route('compras.consulta.index')],
-                ],
-            ];
-            $items[] = [
-                'name' => 'Reportes',
-                'icon' => 'charts',
-                'path' => '#',
-                'subItems' => [
-                    ['name' => 'Rpt. Ventas', 'path' => route('reportes.ventas.rango')],
-                    ['name' => 'Rpt. Ventas del día', 'path' => route('reportes.ventas.dia')],
-                    ['name' => 'Ingresos por tipo de pago', 'path' => route('reportes.ingresos-por-pago')],
-                    ['name' => 'Rpt. Compras', 'path' => route('reportes.compras.rango')],
-                    ['name' => 'Rpt. Compras del día', 'path' => route('reportes.compras.dia')],
                 ],
             ];
             $items[] = ['icon' => 'task', 'name' => 'Backup', 'path' => route('backup.index')];

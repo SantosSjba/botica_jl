@@ -42,8 +42,8 @@ class ConsultaTicketsController extends Controller
     /** @return array<string, mixed> */
     protected function getData(Request $request): array
     {
-        $fechaDesde = $request->input('fecha_desde', '');
-        $fechaHasta = $request->input('fecha_hasta', '');
+        $fechaDesde = trim((string) $request->input('fecha_desde', ''));
+        $fechaHasta = trim((string) $request->input('fecha_hasta', ''));
         $sort = $request->input('sort', 'idventa');
         $direction = strtolower($request->input('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
 
@@ -63,10 +63,10 @@ class ConsultaTicketsController extends Controller
         }
 
         if ($fechaDesde !== '') {
-            $query->whereDate('venta.fecha_emision', '>=', $fechaDesde);
+            $query->where('venta.fecha_emision', '>=', $fechaDesde . ' 00:00:00');
         }
         if ($fechaHasta !== '') {
-            $query->whereDate('venta.fecha_emision', '<=', $fechaHasta);
+            $query->where('venta.fecha_emision', '<=', $fechaHasta . ' 23:59:59');
         }
 
         $ventas = $query->orderBy($orderColumn, $direction)->paginate(15)->withQueryString();

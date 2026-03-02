@@ -50,6 +50,7 @@ class RptVentasController extends Controller
 
     /**
      * Reporte de ventas del día (Rpt. Ventas del día).
+     * ADMINISTRADOR: ve todas las ventas. USUARIO: solo sus propias ventas.
      */
     public function ventasDia(Request $request): View
     {
@@ -63,6 +64,7 @@ class RptVentasController extends Controller
         $totalVentas = $filas->sum('importe_total');
         $config = Configuracion::first();
         $simboloMoneda = $config->simbolo_moneda ?? 'S/';
+        $soloMisVentas = PermisosHelper::tipo() !== 'ADMINISTRADOR';
 
         return view('pages.reportes.ventas-dia', [
             'title' => 'Reporte ventas del día',
@@ -70,6 +72,7 @@ class RptVentasController extends Controller
             'filas' => $filas,
             'totalVentas' => $totalVentas,
             'simboloMoneda' => $simboloMoneda,
+            'soloMisVentas' => $soloMisVentas,
         ]);
     }
 
@@ -99,7 +102,8 @@ class RptVentasController extends Controller
             ->orderBy('v.idventa')
             ->orderBy('dv.item');
 
-        if (PermisosHelper::tipo() === 'USUARIO') {
+        // Solo el ADMINISTRADOR ve todas las ventas; el resto solo las propias.
+        if (PermisosHelper::tipo() !== 'ADMINISTRADOR') {
             $idUsuario = $request->user()->idusu ?? $request->user()->getAuthIdentifier();
             $query->where('v.idusuario', $idUsuario);
         }

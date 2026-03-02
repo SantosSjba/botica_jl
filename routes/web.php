@@ -42,13 +42,24 @@ Route::middleware('auth')->group(function () {
     // Consultas
     Route::get('/consulta/productos', [ConsultaProductosController::class, 'index'])->name('consulta.productos');
 
-    // Mantenimiento: Cliente / Laboratorio (accesible por ADMIN y USUARIO)
+    // Mantenimiento: Cliente / Laboratorio (accesible por ADMIN y USUARIO — igual que dashboard antiguo)
     Route::resource('mantenimiento/clientes', ClienteController::class)->names('mantenimiento.clientes');
 
-    // Mantenimiento: Producto (solo ADMIN) — export antes del resource para no capturar por show
-    Route::get('mantenimiento/productos/export/excel', [MantenimientoProductoController::class, 'exportExcel'])->name('mantenimiento.productos.export.excel');
-    Route::get('mantenimiento/productos/export/pdf', [MantenimientoProductoController::class, 'exportPdf'])->name('mantenimiento.productos.export.pdf');
-    Route::resource('mantenimiento/productos', MantenimientoProductoController::class)->names('mantenimiento.productos');
+    // Mantenimiento: Producto, Categoría, Presentación, Síntomas, Lote, Usuario (solo ADMINISTRADOR)
+    Route::middleware('rol.administrador')->group(function () {
+        Route::get('mantenimiento/productos/export/excel', [MantenimientoProductoController::class, 'exportExcel'])->name('mantenimiento.productos.export.excel');
+        Route::get('mantenimiento/productos/export/pdf', [MantenimientoProductoController::class, 'exportPdf'])->name('mantenimiento.productos.export.pdf');
+        Route::get('mantenimiento/productos/buscar-para-similar', [MantenimientoProductoController::class, 'buscarParaSimilar'])->name('mantenimiento.productos.buscar-para-similar');
+        Route::get('mantenimiento/productos/{producto}/similares', [MantenimientoProductoController::class, 'similares'])->name('mantenimiento.productos.similares');
+        Route::post('mantenimiento/productos/{producto}/similares', [MantenimientoProductoController::class, 'storeSimilar'])->name('mantenimiento.productos.similares.store');
+        Route::delete('mantenimiento/productos/{producto}/similares', [MantenimientoProductoController::class, 'destroySimilar'])->name('mantenimiento.productos.similares.destroy');
+        Route::resource('mantenimiento/productos', MantenimientoProductoController::class)->names('mantenimiento.productos');
+        Route::resource('mantenimiento/categorias', MantenimientoCategoriaController::class)->names('mantenimiento.categorias');
+        Route::resource('mantenimiento/presentaciones', MantenimientoPresentacionController::class)->names('mantenimiento.presentaciones');
+        Route::resource('mantenimiento/sintomas', MantenimientoSintomaController::class)->names('mantenimiento.sintomas');
+        Route::resource('mantenimiento/lotes', MantenimientoLoteController::class)->names('mantenimiento.lotes');
+        Route::resource('mantenimiento/usuarios', MantenimientoUsuarioController::class)->names('mantenimiento.usuarios');
+    });
 
     // Caja: apertura, cierre, seguimiento (ambos roles; visibilidad por estado en menú)
     Route::get('/caja/apertura', [CajaController::class, 'apertura'])->name('caja.apertura');
@@ -89,10 +100,12 @@ Route::middleware('auth')->group(function () {
     // Reportes: comprobante de venta (ticket / A4 / A5)
     Route::get('/reportes/ticket', [ReporteTicketController::class, 'index'])->name('reportes.ticket');
 
-    // Reportes: ventas y compras (solo ADMINISTRADOR)
+    // Reporte ventas del día: todos los usuarios (admin ve todo, usuario solo sus ventas)
+    Route::get('/reportes/ventas-dia', [RptVentasController::class, 'ventasDia'])->name('reportes.ventas.dia');
+
+    // Reportes: ventas rango, compras, ingresos, backup, configuración (solo ADMINISTRADOR)
     Route::middleware('rol.administrador')->group(function () {
         Route::get('/reportes/ventas', [RptVentasController::class, 'ventasRango'])->name('reportes.ventas.rango');
-        Route::get('/reportes/ventas-dia', [RptVentasController::class, 'ventasDia'])->name('reportes.ventas.dia');
         Route::get('/reportes/compras', [RptComprasController::class, 'comprasRango'])->name('reportes.compras.rango');
         Route::get('/reportes/compras-dia', [RptComprasController::class, 'comprasDia'])->name('reportes.compras.dia');
         Route::get('/reportes/ingresos-por-pago', [RptIngresosPorPagoController::class, 'index'])->name('reportes.ingresos-por-pago');
@@ -117,13 +130,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/compras/carrito/actualizar-cantidad', [ComprasController::class, 'actualizarCantidad'])->name('compras.carrito.actualizar-cantidad');
         Route::post('/compras/carrito/actualizar-precio', [ComprasController::class, 'actualizarPrecio'])->name('compras.carrito.actualizar-precio');
     });
-
-    // Mantenimiento: Forma farmacéutica (Categoría)
-    Route::resource('mantenimiento/categorias', MantenimientoCategoriaController::class)->names('mantenimiento.categorias');
-    Route::resource('mantenimiento/presentaciones', MantenimientoPresentacionController::class)->names('mantenimiento.presentaciones');
-    Route::resource('mantenimiento/sintomas', MantenimientoSintomaController::class)->names('mantenimiento.sintomas');
-    Route::resource('mantenimiento/lotes', MantenimientoLoteController::class)->names('mantenimiento.lotes');
-    Route::resource('mantenimiento/usuarios', MantenimientoUsuarioController::class)->names('mantenimiento.usuarios');
 
     // Páginas en desarrollo (mensaje único)
     Route::get('/en-desarrollo', function () {

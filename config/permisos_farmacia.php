@@ -19,15 +19,13 @@ return [
     |--------------------------------------------------------------------------
     */
     'rutas_solo_administrador' => [
-        // Mantenimiento
-        'mantenimiento.*',
-        'cliente.*',
-        'producto.*',
-        'categoria.*',
-        'presentacion.*',
-        'usuario.*',
-        'sintomas.*',
-        'lote.*',
+        // Mantenimiento (excepto clientes: ADMIN y USUARIO ven Clientes en el menú antiguo)
+        'mantenimiento.productos.*',
+        'mantenimiento.categorias.*',
+        'mantenimiento.presentaciones.*',
+        'mantenimiento.sintomas.*',
+        'mantenimiento.lotes.*',
+        'mantenimiento.usuarios.*',
         // Compras
         'compras.*',
         'consulta-compras',

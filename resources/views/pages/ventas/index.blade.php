@@ -459,6 +459,7 @@ document.addEventListener('alpine:init', function() {
                 if (data.success) {
                     await this.refreshCarrito();
                     if (typeof window.ventasResetPagos === 'function') window.ventasResetPagos();
+                    if (typeof window.ventasResetForm === 'function') window.ventasResetForm();
                     if (data.idventa) {
                         window.open(this.baseUrl + '/reportes/ticket?idventa=' + data.idventa + '&formato=ticket', '_blank', 'noopener');
                         if (typeof window.showToast === 'function') window.showToast(data.message || 'Venta registrada. Se abrió el ticket para imprimir.', 'success');
@@ -552,6 +553,36 @@ document.addEventListener('alpine:init', function() {
             ventasToggleRowCells(first);
         }
         ventasActualizarPagosResumen();
+    };
+
+    window.ventasResetForm = function() {
+        var tico = document.getElementById('tico');
+        var serie = document.getElementById('serie');
+        var correl = document.getElementById('correl');
+        var fecha = document.getElementById('fecha');
+        var forma = document.getElementById('forma');
+        var td = document.getElementById('td');
+        var numero = document.getElementById('numero');
+        var rz = document.getElementById('rz');
+        var dir = document.getElementById('dir');
+        var codInput = document.getElementById('ventas-cod');
+        if (fecha) fecha.value = new Date().toISOString().slice(0, 10);
+        if (forma) forma.value = 'EFECTIVO';
+        if (td) td.value = '2';
+        if (numero) numero.value = '';
+        if (rz) rz.value = 'público en general';
+        if (dir) dir.value = '';
+        if (codInput) codInput.value = '';
+        if (tico) {
+            tico.value = '00';
+            if (serie) serie.value = 'T001';
+            if (correl) correl.value = '';
+            window.axios.post('{{ route("ventas.correlativo") }}', { tico: '00' }).then(function(r) {
+                if (r.data && r.data.correlativo && correl) correl.value = r.data.correlativo;
+            });
+            var opts = document.querySelectorAll('#td option');
+            if (opts.length) opts.forEach(function(o) { o.disabled = false; });
+        }
     };
     document.getElementById('ventas-pago-agregar')?.addEventListener('click', function() {
         var tbody = document.getElementById('ventas-pagos-tbody');
