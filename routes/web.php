@@ -100,9 +100,7 @@ Route::middleware('auth')->group(function () {
     })->name('calendar');
 
     // Perfil
-    Route::get('/profile', function () {
-        return view('pages.profile', ['title' => 'Perfil']);
-    })->name('profile');
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile');
 
     // Formularios
     Route::get('/form-elements', function () {
