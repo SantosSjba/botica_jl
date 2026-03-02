@@ -15,11 +15,83 @@
     <meta charset="utf-8">
     <title>{{ $tipocompDesc }} {{ $serie->serie ?? '' }}-{{ $serie->correlativo ?? '' }}</title>
     <style>
+        :root {
+            --toolbar-bg: #1e293b;
+            --toolbar-text: #f1f5f9;
+            --toolbar-border: #334155;
+            --btn-format: #334155;
+            --btn-format-hover: #475569;
+            --btn-active-bg: #3b82f6;
+            --btn-active-text: #fff;
+            --btn-print-bg: #22c55e;
+            --btn-print-hover: #16a34a;
+        }
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 12px; font-family: Arial, sans-serif; }
-        .no-print { margin-bottom: 12px; }
-        .no-print button { margin-right: 8px; padding: 8px 14px; cursor: pointer; }
-        .comprobante { border: 1px solid #ccc; padding: 12px; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: #f1f5f9; min-height: 100vh; }
+        .no-print {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--toolbar-bg);
+            color: var(--toolbar-text);
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+        }
+        .no-print .toolbar-label { font-size: 13px; font-weight: 600; color: #94a3b8; margin-right: 4px; }
+        .no-print .format-group {
+            display: inline-flex;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 4px;
+            gap: 2px;
+        }
+        .no-print .format-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #cbd5e1;
+            background: transparent;
+            transition: background 0.2s, color 0.2s;
+        }
+        .no-print .format-btn:hover { background: var(--btn-format-hover); color: #fff; }
+        .no-print .format-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); }
+        .no-print .format-btn .size { font-size: 11px; opacity: 0.85; }
+        .no-print .print-btn {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--btn-print-bg);
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.35);
+        }
+        .no-print .print-btn:hover { background: var(--btn-print-hover); }
+        .no-print .print-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .comprobante-wrap { padding: 0 20px 24px; }
+        .comprobante {
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
         .comprobante table { width: 100%; border-collapse: collapse; }
         .comprobante th, .comprobante td { padding: 4px 6px; text-align: left; vertical-align: top; }
         .comprobante .text-right { text-align: right; }
@@ -27,38 +99,63 @@
         .comprobante hr { border: none; border-top: 1px dashed #333; margin: 6px 0; }
         .comprobante .total-row { font-weight: bold; }
 
-        /* Ticket: ancho reducido (~80mm / 302px) */
-        .formato-ticket .comprobante { max-width: 302px; font-size: 11px; }
+        /* Ticket: ancho 80mm en pantalla ~302px */
+        .formato-ticket .comprobante-wrap { max-width: 340px; margin: 0 auto; padding: 0 12px 24px; }
+        .formato-ticket .comprobante { max-width: 302px; font-size: 11px; padding: 10px; }
         .formato-ticket .comprobante img { max-width: 100px; max-height: 80px; }
         .formato-ticket .comprobante th, .formato-ticket .comprobante td { padding: 2px 4px; font-size: 11px; }
 
         /* A4 */
+        .formato-a4 .comprobante-wrap { max-width: 230mm; margin: 0 auto; }
         .formato-a4 .comprobante { max-width: 210mm; font-size: 12px; }
         .formato-a4 .comprobante img { max-height: 80px; }
 
         /* A5 */
+        .formato-a5 .comprobante-wrap { max-width: 168mm; margin: 0 auto; }
         .formato-a5 .comprobante { max-width: 148mm; font-size: 11px; }
         .formato-a5 .comprobante img { max-height: 70px; }
 
         @media print {
-            body { padding: 0; }
+            body { background: #fff; padding: 0 !important; }
             .no-print { display: none !important; }
-            .comprobante { border: none; }
-            .formato-ticket .comprobante { max-width: 80mm; }
-            .formato-a4 .comprobante { max-width: 100%; }
-            .formato-a5 .comprobante { max-width: 100%; }
+            .comprobante-wrap { padding: 0 !important; max-width: none !important; }
+            .comprobante { border: none !important; box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; }
+            .formato-ticket .comprobante { width: 80mm !important; max-width: 80mm !important; }
+            .formato-a4 .comprobante { width: 100% !important; max-width: 100% !important; }
+            .formato-a5 .comprobante { width: 100% !important; max-width: 100% !important; }
         }
-        @page { size: auto; margin: 10mm; }
-        @page formato-ticket { size: 80mm auto; margin: 5mm; }
+        @if($formato === 'ticket')
+        @page { size: 80mm auto; margin: 3mm; }
+        @elseif($formato === 'a4')
+        @page { size: A4; margin: 12mm; }
+        @else
+        @page { size: A5; margin: 10mm; }
+        @endif
     </style>
 </head>
 <body class="formato-{{ $formato }}">
     <div class="no-print">
-        <button type="button" onclick="cambiarFormato('ticket')">Imprimir Ticket</button>
-        <button type="button" onclick="cambiarFormato('a4')">Imprimir A4</button>
-        <button type="button" onclick="cambiarFormato('a5')">Imprimir A5</button>
-        <button type="button" onclick="window.print()">Imprimir ahora</button>
+        <span class="toolbar-label">Formato de impresión</span>
+        <div class="format-group">
+            <button type="button" class="format-btn {{ $formato === 'ticket' ? 'active' : '' }}" onclick="cambiarFormato('ticket')" title="Ticket térmico 80 mm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9h.01M6 15h.01M10 9h.01M10 15h.01M14 9h.01M14 15h.01M18 9h.01M18 15h.01"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+                Ticket <span class="size">80 mm</span>
+            </button>
+            <button type="button" class="format-btn {{ $formato === 'a4' ? 'active' : '' }}" onclick="cambiarFormato('a4')" title="Hoja A4">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg>
+                A4
+            </button>
+            <button type="button" class="format-btn {{ $formato === 'a5' ? 'active' : '' }}" onclick="cambiarFormato('a5')" title="Hoja A5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg>
+                A5
+            </button>
+        </div>
+        <button type="button" class="print-btn" onclick="window.print()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            Imprimir
+        </button>
     </div>
+    <div class="comprobante-wrap">
     <div class="comprobante">
         <table>
             <tr>
@@ -187,6 +284,7 @@
             </tr>
         </table>
         <p class="text-center" style="margin-top: 12px; font-size: 0.9em;">Representación impresa de la Boleta/Factura de venta electrónica</p>
+    </div>
     </div>
     <script>
         function cambiarFormato(f) {
