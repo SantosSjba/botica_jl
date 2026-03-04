@@ -94,24 +94,17 @@ class CajaController extends Controller
     }
 
     /**
-     * Obtiene la caja abierta del usuario actual (cualquier día).
+     * Obtiene la caja abierta del usuario actual (solo estado Abierto).
+     * No se devuelve caja cerrada: así el cierre y las ventas mostradas corresponden a la sesión actual.
      */
     protected function getCajaAbierta(string $usuarioLogin): ?CajaApertura
     {
         if ($usuarioLogin === '') {
             return null;
         }
-        $abierta = CajaApertura::where('usuario', $usuarioLogin)
+        return CajaApertura::where('usuario', $usuarioLogin)
             ->where('estado', 'Abierto')
             ->orderByDesc('fecha')
-            ->orderByDesc('idcaja_a')
-            ->first();
-        if ($abierta) {
-            return $abierta;
-        }
-        $hoy = now()->toDateString();
-        return CajaApertura::where('usuario', $usuarioLogin)
-            ->where('fecha', $hoy)
             ->orderByDesc('idcaja_a')
             ->first();
     }

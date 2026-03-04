@@ -15,13 +15,15 @@ class CuadreCajaController extends Controller
     /**
      * Muestra el cuadre diario de caja para un usuario y fecha.
      * ADMIN puede ver cualquier usuario vía GET; USUARIO solo el propio.
+     * Al abrir nueva caja (sin parámetros), se usa la fecha de la caja abierta de hoy o hoy, y las ventas son solo de ese día (cero si recién abrió).
      */
     public function show(Request $request): View
     {
         $user = $request->user();
         $tipo = PermisosHelper::tipo();
-        $usuCuadre = $user->usuario ?? '';
-        $diaCuadre = now()->toDateString();
+        $usuCuadre = $user->usuario ?? $user->nombre ?? '';
+        $hoy = now()->toDateString();
+        $diaCuadre = $hoy;
 
         if ($tipo === 'ADMINISTRADOR' && $request->has('usuario') && $request->has('fecha')) {
             $usuCuadre = trim((string) $request->input('usuario'));
@@ -34,6 +36,9 @@ class CuadreCajaController extends Controller
             if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $fec) && strtotime($fec) !== false) {
                 $diaCuadre = $fec;
             }
+        } else {
+            // Sin parámetro fecha: cuadre del día de hoy. Al abrir nueva caja, ventas = cero.
+            $diaCuadre = $hoy;
         }
 
         $usuarioModel = \App\Models\Usuario::where('usuario', $usuCuadre)->first();
@@ -50,8 +55,11 @@ class CuadreCajaController extends Controller
             abort(404, 'No hay datos de apertura de caja para el usuario y fecha seleccionados.');
         }
 
+        // Usar siempre la fecha de la apertura seleccionada para ventas (evita mostrar ventas de ayer en caja de hoy).
+        $fechaVentas = $apertura->fecha->format('Y-m-d');
+
         $porForma = DB::table('venta')
-            ->whereBetween('fecha_emision', [$diaCuadre . ' 00:00:00', $diaCuadre . ' 23:59:59'])
+            ->whereBetween('fecha_emision', [$fechaVentas . ' 00:00:00', $fechaVentas . ' 23:59:59'])
             ->where('idusuario', $idUsuario)
             ->whereNotIn('estado', ['anulado'])
             ->selectRaw('formadepago, COALESCE(SUM(total), 0) as total')
@@ -61,11 +69,11 @@ class CuadreCajaController extends Controller
             ->all();
 
         $totalVentas = array_sum($porForma);
-        $cierre = CajaCierre::where('usuario', $usuCuadre)->where('fecha', $diaCuadre)->orderByDesc('idcaja_c')->first();
+        $cierre = CajaCierre::where('usuario', $usuCuadre)->where('fecha', $fechaVentas)->orderByDesc('idcaja_c')->first();
 
         return view('pages.reportes.cuadre-caja', [
             'usuario' => $usuCuadre,
-            'fecha' => $diaCuadre,
+            'fecha' => $fechaVentas,
             'apertura' => $apertura,
             'porForma' => $porForma,
             'totalVentas' => $totalVentas,

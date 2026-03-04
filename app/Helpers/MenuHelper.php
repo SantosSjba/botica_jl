@@ -90,6 +90,7 @@ class MenuHelper
         }
         if (PermisosHelper::puedeVerCajaSeguimiento()) {
             $cajaSubItems[] = ['name' => 'Seguimiento de caja', 'path' => $routeCajaSeguimiento];
+            $cajaSubItems[] = ['name' => 'Cuadre de caja', 'path' => route('reportes.cuadrecaja')];
         }
         if (!empty($cajaSubItems)) {
             $items[] = [
