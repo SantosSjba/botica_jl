@@ -8,7 +8,7 @@
 @endphp
 
 @section('content')
-<div class="min-w-0 space-y-4" x-data="ventasForm()">
+<div class="min-w-0 space-y-4" x-data="ventasForm()" x-init="$nextTick(() => rebindCarrito())">
     <x-common.page-breadcrumb :pageTitle="$title" />
 
     <div id="ventas-msn" class="hidden"></div>
