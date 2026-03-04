@@ -51,7 +51,7 @@ class CuadreCajaController extends Controller
         }
 
         $porForma = DB::table('venta')
-            ->where('fecha_emision', $diaCuadre)
+            ->whereBetween('fecha_emision', [$diaCuadre . ' 00:00:00', $diaCuadre . ' 23:59:59'])
             ->where('idusuario', $idUsuario)
             ->whereNotIn('estado', ['anulado'])
             ->selectRaw('formadepago, COALESCE(SUM(total), 0) as total')

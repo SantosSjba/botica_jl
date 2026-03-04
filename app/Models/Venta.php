@@ -19,7 +19,7 @@ class Venta extends Model
     ];
 
     protected $casts = [
-        'fecha_emision' => 'date',
+        'fecha_emision' => 'datetime',
         'op_gravadas' => 'decimal:2',
         'op_exoneradas' => 'decimal:2',
         'op_inafectas' => 'decimal:2',

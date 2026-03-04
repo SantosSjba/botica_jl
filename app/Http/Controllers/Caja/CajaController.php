@@ -135,15 +135,23 @@ class CajaController extends Controller
         $diaActual = now()->toDateString();
         // Incluir ventas del día de la caja y, si la caja es de un día anterior, también las del día actual (tickets que se registraron con fecha equivocada)
         $fechasIncluir = $fechaCaja === $diaActual ? [$fechaCaja] : [$fechaCaja, $diaActual];
+        $filtroFechasVenta = function ($query, $colFecha = 'venta.fecha_emision') use ($fechasIncluir) {
+            $query->where(function ($q) use ($colFecha, $fechasIncluir) {
+                foreach ($fechasIncluir as $f) {
+                    $q->orWhereBetween($colFecha, [$f . ' 00:00:00', $f . ' 23:59:59']);
+                }
+            });
+        };
 
         // Totales por tipo de pago: desde pago_venta si existe, más ventas antiguas sin detalle de pagos
         $porForma = [];
         if (Schema::hasTable('pago_venta')) {
             $desdePagoVenta = DB::table('pago_venta')
                 ->join('venta', 'pago_venta.idventa', '=', 'venta.idventa')
-                ->whereIn('venta.fecha_emision', $fechasIncluir)
                 ->where('venta.idusuario', $idUsuario)
-                ->whereNotIn('venta.estado', ['anulado'])
+                ->whereNotIn('venta.estado', ['anulado']);
+            $filtroFechasVenta($desdePagoVenta, 'venta.fecha_emision');
+            $desdePagoVenta = $desdePagoVenta
                 ->selectRaw('pago_venta.tipo_pago, COALESCE(SUM(pago_venta.monto), 0) as total')
                 ->groupBy('pago_venta.tipo_pago')
                 ->pluck('total', 'tipo_pago')
@@ -151,9 +159,9 @@ class CajaController extends Controller
                 ->all();
             $ventasConPagos = DB::table('pago_venta')->distinct()->pluck('idventa')->all();
             $ventasSinPagos = DB::table('venta')
-                ->whereIn('fecha_emision', $fechasIncluir)
                 ->where('idusuario', $idUsuario)
                 ->whereNotIn('estado', ['anulado']);
+            $filtroFechasVenta($ventasSinPagos, 'fecha_emision');
             if (count($ventasConPagos) > 0) {
                 $ventasSinPagos->whereNotIn('idventa', $ventasConPagos);
             }
@@ -168,10 +176,11 @@ class CajaController extends Controller
                 $porForma[$tipo] = ($porForma[$tipo] ?? 0) + $monto;
             }
         } else {
-            $porForma = DB::table('venta')
-                ->whereIn('fecha_emision', $fechasIncluir)
+            $ventasQuery = DB::table('venta')
                 ->where('idusuario', $idUsuario)
-                ->whereNotIn('estado', ['anulado'])
+                ->whereNotIn('estado', ['anulado']);
+            $filtroFechasVenta($ventasQuery, 'fecha_emision');
+            $porForma = $ventasQuery
                 ->selectRaw('formadepago, COALESCE(SUM(total), 0) as total')
                 ->groupBy('formadepago')
                 ->pluck('total', 'formadepago')

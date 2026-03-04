@@ -85,7 +85,7 @@ class RptVentasController extends Controller
         $query = DB::table('venta as v')
             ->join('detalleventa as dv', 'v.idventa', '=', 'dv.idventa')
             ->join('productos as p', 'dv.idproducto', '=', 'p.idproducto')
-            ->whereBetween('v.fecha_emision', [$desde, $hasta])
+            ->whereBetween('v.fecha_emision', [$desde . ' 00:00:00', $hasta . ' 23:59:59'])
             ->whereNotIn('v.estado', ['anulado'])
             ->select(
                 'v.idventa',

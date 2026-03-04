@@ -151,6 +151,8 @@ Run migrations:
 php artisan migrate
 ```
 
+**Sistema Farmacia – migración fecha/hora en ventas:** Si la base de datos proviene de un dump donde `venta.fecha_emision` es DATE, existe una migración que la pasa a DATETIME sin perder datos. Ver [docs/MIGRACION-FECHA-HORA-VENTA.md](docs/MIGRACION-FECHA-HORA-VENTA.md) para pasos y backup.
+
 ### Step 7: (Optional) Seed the Database
 
 If you want sample data:

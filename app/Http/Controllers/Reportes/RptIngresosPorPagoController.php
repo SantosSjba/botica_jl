@@ -38,7 +38,7 @@ class RptIngresosPorPagoController extends Controller
         if (Schema::hasTable('pago_venta')) {
             $porTipo = DB::table('pago_venta')
                 ->join('venta', 'pago_venta.idventa', '=', 'venta.idventa')
-                ->whereBetween('venta.fecha_emision', [$desde, $hasta])
+                ->whereBetween('venta.fecha_emision', [$desde . ' 00:00:00', $hasta . ' 23:59:59'])
                 ->whereNotIn('venta.estado', ['anulado'])
                 ->selectRaw('pago_venta.tipo_pago, COALESCE(SUM(pago_venta.monto), 0) as total')
                 ->groupBy('pago_venta.tipo_pago')
@@ -49,7 +49,7 @@ class RptIngresosPorPagoController extends Controller
             $totalGeneral = array_sum($porTipo);
         } else {
             $porTipo = DB::table('venta')
-                ->whereBetween('fecha_emision', [$desde, $hasta])
+                ->whereBetween('fecha_emision', [$desde . ' 00:00:00', $hasta . ' 23:59:59'])
                 ->whereNotIn('estado', ['anulado'])
                 ->selectRaw('formadepago as tipo_pago, COALESCE(SUM(total), 0) as total')
                 ->groupBy('formadepago')

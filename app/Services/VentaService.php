@@ -332,7 +332,8 @@ class VentaService
             'correlativo' => $correlativo,
         ]);
 
-        $fechaEmision = $data['fecha_emision'] ?? Carbon::today()->format('Y-m-d');
+        $fechaSolo = $data['fecha_emision'] ?? Carbon::today()->format('Y-m-d');
+        $fechaEmision = Carbon::parse($fechaSolo)->format('Y-m-d') . ' ' . Carbon::now()->format('H:i:s');
         $totalVenta = (float) $totales['total'];
         $pagos = $data['pagos'] ?? null;
 

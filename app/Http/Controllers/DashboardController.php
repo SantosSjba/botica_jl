@@ -61,7 +61,7 @@ class DashboardController extends Controller
             ->orderBy('nombres')
             ->get(['idusu', 'usuario', 'nombres']);
 
-        $queryVentas = Venta::whereBetween('fecha_emision', [$fechaDesde, $fechaHasta])
+        $queryVentas = Venta::whereBetween('fecha_emision', [$fechaDesde . ' 00:00:00', $fechaHasta . ' 23:59:59'])
             ->where('estado', '!=', 'anulado');
         if ($filtroUsuario > 0) {
             $queryVentas->where('idusuario', $filtroUsuario);
@@ -71,7 +71,7 @@ class DashboardController extends Controller
         $queryCostos = DB::table('detalleventa')
             ->join('productos', 'detalleventa.idproducto', '=', 'productos.idproducto')
             ->join('venta', 'detalleventa.idventa', '=', 'venta.idventa')
-            ->whereBetween('venta.fecha_emision', [$fechaDesde, $fechaHasta])
+            ->whereBetween('venta.fecha_emision', [$fechaDesde . ' 00:00:00', $fechaHasta . ' 23:59:59'])
             ->where('venta.estado', '!=', 'anulado');
         if ($filtroUsuario > 0) {
             $queryCostos->where('venta.idusuario', $filtroUsuario);
