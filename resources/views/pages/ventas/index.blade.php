@@ -78,7 +78,7 @@
                 </div>
                 <div>
                     <label for="fecha" class="{{ $labelClass }}">Fecha de emisión <span class="text-red-500">*</span></label>
-                    <input type="date" id="fecha" name="fecha" value="{{ date('Y-m-d') }}" required class="{{ $inputClass }}" />
+                    <input type="date" id="fecha" name="fecha" value="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" required class="{{ $inputClass }}" />
                 </div>
                 <input type="hidden" id="forma" name="forma" value="EFECTIVO" />
                 <div>

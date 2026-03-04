@@ -6,6 +6,7 @@ use App\Helpers\PermisosHelper;
 use App\Http\Controllers\Controller;
 use App\Models\CajaApertura;
 use App\Models\CajaCierre;
+use App\Models\Usuario;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -80,10 +81,26 @@ class CajaController extends Controller
     }
 
     /**
+     * Obtiene el login (usuario) del usuario autenticado. Si no viene en el modelo, se resuelve por id.
+     */
+    protected function getUsuarioLogin($user): string
+    {
+        $login = $user->usuario ?? null;
+        if ($login !== null && $login !== '') {
+            return (string) $login;
+        }
+        $u = Usuario::find($user->getAuthIdentifier());
+        return $u ? (string) $u->usuario : '';
+    }
+
+    /**
      * Obtiene la caja abierta del usuario actual (cualquier día).
      */
     protected function getCajaAbierta(string $usuarioLogin): ?CajaApertura
     {
+        if ($usuarioLogin === '') {
+            return null;
+        }
         $abierta = CajaApertura::where('usuario', $usuarioLogin)
             ->where('estado', 'Abierto')
             ->orderByDesc('fecha')
@@ -106,7 +123,7 @@ class CajaController extends Controller
     public function cierre(Request $request): View|JsonResponse|RedirectResponse
     {
         $user = $request->user();
-        $usuarioLogin = $user->usuario ?? '';
+        $usuarioLogin = $this->getUsuarioLogin($user);
 
         $cajaAbierta = $this->getCajaAbierta($usuarioLogin);
         if (!$cajaAbierta || $cajaAbierta->estado !== 'Abierto') {
@@ -115,13 +132,16 @@ class CajaController extends Controller
 
         $fechaCaja = $cajaAbierta->fecha->format('Y-m-d');
         $idUsuario = $user->idusu ?? $user->getAuthIdentifier();
+        $diaActual = now()->toDateString();
+        // Incluir ventas del día de la caja y, si la caja es de un día anterior, también las del día actual (tickets que se registraron con fecha equivocada)
+        $fechasIncluir = $fechaCaja === $diaActual ? [$fechaCaja] : [$fechaCaja, $diaActual];
 
         // Totales por tipo de pago: desde pago_venta si existe, más ventas antiguas sin detalle de pagos
         $porForma = [];
         if (Schema::hasTable('pago_venta')) {
             $desdePagoVenta = DB::table('pago_venta')
                 ->join('venta', 'pago_venta.idventa', '=', 'venta.idventa')
-                ->where('venta.fecha_emision', $fechaCaja)
+                ->whereIn('venta.fecha_emision', $fechasIncluir)
                 ->where('venta.idusuario', $idUsuario)
                 ->whereNotIn('venta.estado', ['anulado'])
                 ->selectRaw('pago_venta.tipo_pago, COALESCE(SUM(pago_venta.monto), 0) as total')
@@ -131,7 +151,7 @@ class CajaController extends Controller
                 ->all();
             $ventasConPagos = DB::table('pago_venta')->distinct()->pluck('idventa')->all();
             $ventasSinPagos = DB::table('venta')
-                ->where('fecha_emision', $fechaCaja)
+                ->whereIn('fecha_emision', $fechasIncluir)
                 ->where('idusuario', $idUsuario)
                 ->whereNotIn('estado', ['anulado']);
             if (count($ventasConPagos) > 0) {
@@ -149,7 +169,7 @@ class CajaController extends Controller
             }
         } else {
             $porForma = DB::table('venta')
-                ->where('fecha_emision', $fechaCaja)
+                ->whereIn('fecha_emision', $fechasIncluir)
                 ->where('idusuario', $idUsuario)
                 ->whereNotIn('estado', ['anulado'])
                 ->selectRaw('formadepago, COALESCE(SUM(total), 0) as total')
@@ -178,7 +198,7 @@ class CajaController extends Controller
             'formaDeposito' => $formaDeposito,
             'totalVentas' => $totalVentas,
             'cajaSistema' => $cajaSistema,
-            'diaActual' => now()->toDateString(),
+            'diaActual' => $diaActual,
         ]);
     }
 
@@ -188,7 +208,7 @@ class CajaController extends Controller
     public function storeCierre(Request $request): JsonResponse|RedirectResponse
     {
         $user = $request->user();
-        $usuarioLogin = $user->usuario ?? '';
+        $usuarioLogin = $this->getUsuarioLogin($user);
 
         $cajaAbierta = $this->getCajaAbierta($usuarioLogin);
         if (!$cajaAbierta || $cajaAbierta->estado !== 'Abierto') {

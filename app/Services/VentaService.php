@@ -10,6 +10,7 @@ use App\Models\PagoVenta;
 use App\Models\Producto;
 use App\Models\Serie;
 use App\Models\Venta;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class VentaService
@@ -331,7 +332,7 @@ class VentaService
             'correlativo' => $correlativo,
         ]);
 
-        $fechaEmision = $data['fecha_emision'] ?? now()->format('Y-m-d');
+        $fechaEmision = $data['fecha_emision'] ?? Carbon::today()->format('Y-m-d');
         $totalVenta = (float) $totales['total'];
         $pagos = $data['pagos'] ?? null;
 

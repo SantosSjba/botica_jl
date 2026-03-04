@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\CajaApertura;
+use App\Models\Usuario;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -39,10 +40,18 @@ class PermisosHelper
     public static function estadoCaja(): string
     {
         $usuario = Auth::user();
-        if (!$usuario || !isset($usuario->usuario)) {
+        if (!$usuario) {
             return '';
         }
-        $usu = $usuario->usuario;
+        $usu = $usuario->usuario ?? null;
+        if ($usu === null || $usu === '') {
+            $model = Usuario::find($usuario->getAuthIdentifier());
+            $usu = $model ? $model->usuario : null;
+        }
+        if ($usu === null || $usu === '') {
+            return '';
+        }
+        $usu = (string) $usu;
         $hoy = now()->toDateString();
 
         $abierta = CajaApertura::where('usuario', $usu)
