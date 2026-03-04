@@ -28,7 +28,7 @@
                 <table class="w-full min-w-[600px] text-left text-sm text-gray-700 dark:text-gray-300">
                     <thead class="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
                         <tr>
-                            <th class="px-4 py-3 font-medium text-gray-800 dark:text-white/90">Fecha</th>
+                            <th class="px-4 py-3 font-medium text-gray-800 dark:text-white/90">Fecha / Hora</th>
                             <th class="px-4 py-3 font-medium text-gray-800 dark:text-white/90">Producto</th>
                             <th class="px-4 py-3 text-right font-medium text-gray-800 dark:text-white/90">Cant.</th>
                             <th class="px-4 py-3 text-right font-medium text-gray-800 dark:text-white/90">P. unit.</th>
@@ -40,7 +40,7 @@
                         @php $idventaAnt = 0; @endphp
                         @forelse($filas as $row)
                             <tr class="border-b border-gray-100 dark:border-gray-700/50">
-                                <td class="px-4 py-3">{{ $row->fecha_emision }}</td>
+                                <td class="px-4 py-3">{{ $row->fecha_emision ? \Carbon\Carbon::parse($row->fecha_emision)->format('d/m/Y H:i') : '—' }}</td>
                                 <td class="max-w-[200px] truncate px-4 py-3 text-gray-800 dark:text-white/90" title="{{ e($row->producto) }}">{{ $row->producto }}</td>
                                 <td class="px-4 py-3 text-right">{{ $row->cantidad }}</td>
                                 <td class="px-4 py-3 text-right">{{ $simboloMoneda }} {{ number_format((float)($row->precio_unitario ?? $row->valor_unitario), 2) }}</td>
