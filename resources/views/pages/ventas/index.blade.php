@@ -566,7 +566,7 @@ document.addEventListener('alpine:init', function() {
         var rz = document.getElementById('rz');
         var dir = document.getElementById('dir');
         var codInput = document.getElementById('ventas-cod');
-        if (fecha) fecha.value = new Date().toISOString().slice(0, 10);
+        if (fecha) fecha.value = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' });
         if (forma) forma.value = 'EFECTIVO';
         if (td) td.value = '2';
         if (numero) numero.value = '';

@@ -112,7 +112,7 @@ document.addEventListener('alpine:init', function() {
             refError: '',
             buscarLoading: false,
             submitLoading: false,
-            fechaHoy: new Date().toISOString().slice(0, 10),
+            fechaHoy: new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }),
             routes: {
                 buscar: @json(route('notacredito.buscar')),
                 correlativo: @json(route('notacredito.correlativo')),
